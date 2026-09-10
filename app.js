@@ -114,7 +114,31 @@
   function flip() {
     if (!state.current || state.studyMode !== "flip") return;
     state.flipped = !state.flipped;
+
+    // Toggle the class on the card that's already in the DOM instead of
+    // calling render() (which tears down and rebuilds the whole app,
+    // including a brand-new .card node). Rebuilding the node meant the CSS
+    // 3D-flip transition had no "before" state to animate from, so the
+    // browser snapped straight to the end pose and the old front face
+    // briefly clipped/showed through the back during the swap.
+    var cardEl = document.querySelector(".stage .card");
+    if (cardEl) {
+      cardEl.classList.toggle("flipped", state.flipped);
+      updateGradeRowEnabled();
+      return;
+    }
     render();
+  }
+
+  // Enable/disable the grade buttons in place, mirroring what render()
+  // would compute, without touching the card element.
+  function updateGradeRowEnabled() {
+    var showGrades = state.studyMode === "type" ? state.typedChecked : state.flipped;
+    var buttons = document.querySelectorAll(".grade-row .grade-btn");
+    for (var i = 0; i < buttons.length; i++) {
+      if (showGrades) buttons[i].removeAttribute("disabled");
+      else buttons[i].setAttribute("disabled", "disabled");
+    }
   }
 
   function submitTypedAnswer() {

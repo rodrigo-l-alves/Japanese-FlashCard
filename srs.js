@@ -9,6 +9,7 @@
 
   function grade(p, gradeKey, now) {
     if (!p) p = initProgress(now);
+    p.lastGrade = gradeKey;
 
     if (gradeKey === "again") {
       p.lapses += 1;

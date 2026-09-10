@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#f6f0e7">
   <meta name="description" content="A calm, focused Japanese N5 and N4 flashcard study app.">
   <title>Japanese Flashcards · N5 / N4</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=8">
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="icon-192.png">
   <link rel="apple-touch-icon" href="icon-192.png">
@@ -22,11 +22,12 @@
   <script src="srs.js"></script>
   <script src="audio.js"></script>
   <script src="romanji.js"></script>
-  <script src="app.js"></script>
+  <script src="writing.js?v=8"></script>
+  <script src="app.js?v=8"></script>
   <script>
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", function () {
-        navigator.serviceWorker.register("sw.js").catch(function (err) {
+        navigator.serviceWorker.register("sw.js?v=6").catch(function (err) {
           console.error("SW registration failed:", err);
         });
       });

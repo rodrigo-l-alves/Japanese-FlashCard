@@ -1,54 +1,40 @@
-// Bump this version any time you update the app files, so old caches get replaced.
-var CACHE_NAME = "n5-flashcards-v3";
+// App shell cache. v8 forces clients off stale pre-writing builds.
+var CACHE_NAME = "n5-flashcards-v8";
 var ASSETS = [
-  "./",
-  "./index.html",
-  "./style.css",
-  "./data.js",
-  "./storage.js",
-  "./srs.js",
-  "./audio.js",
-  "./romanji.js",
-  "./app.js",
-  "./manifest.json",
-  "./icon-192.png",
-  "./icon-512.png"
+  "./", "./index.html", "./style.css?v=8", "./data.js", "./storage.js",
+  "./srs.js", "./audio.js", "./romanji.js", "./writing.js?v=8", "./app.js?v=8",
+  "./manifest.json", "./icon-192.png", "./icon-512.png"
 ];
 
 self.addEventListener("install", function (event) {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then(function (cache) {
-      return cache.addAll(ASSETS);
-    })
-  );
+  event.waitUntil(caches.open(CACHE_NAME).then(function (cache) { return cache.addAll(ASSETS); }));
   self.skipWaiting();
 });
 
 self.addEventListener("activate", function (event) {
-  event.waitUntil(
-    caches.keys().then(function (keys) {
-      return Promise.all(
-        keys.filter(function (k) { return k !== CACHE_NAME; })
-            .map(function (k) { return caches.delete(k); })
-      );
-    })
-  );
+  event.waitUntil(caches.keys().then(function (keys) {
+    return Promise.all(keys.filter(function (k) { return k !== CACHE_NAME; }).map(function (k) { return caches.delete(k); }));
+  }));
   self.clients.claim();
 });
 
-// Cache-first for app files, falling back to network (and caching what we fetch).
 self.addEventListener("fetch", function (event) {
   if (event.request.method !== "GET") return;
-  event.respondWith(
-    caches.match(event.request).then(function (cached) {
-      if (cached) return cached;
-      return fetch(event.request).then(function (response) {
-        var copy = response.clone();
-        caches.open(CACHE_NAME).then(function (cache) { cache.put(event.request, copy); });
-        return response;
-      }).catch(function () {
-        // offline and not cached — nothing more we can do for this request
-      });
-    })
-  );
+  var url = new URL(event.request.url);
+  var isAppCode = event.request.mode === "navigate" || /\.(?:js|css|html)$/.test(url.pathname);
+  if (isAppCode) {
+    event.respondWith(fetch(event.request).then(function (response) {
+      var copy = response.clone();
+      caches.open(CACHE_NAME).then(function (cache) { cache.put(event.request, copy); });
+      return response;
+    }).catch(function () { return caches.match(event.request); }));
+    return;
+  }
+  event.respondWith(caches.match(event.request).then(function (cached) {
+    return cached || fetch(event.request).then(function (response) {
+      var copy = response.clone();
+      caches.open(CACHE_NAME).then(function (cache) { cache.put(event.request, copy); });
+      return response;
+    });
+  }));
 });

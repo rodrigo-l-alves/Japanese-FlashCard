@@ -19,6 +19,8 @@
     saveError: false,
     importError: "",
     addFormError: "",
+    writeTargetId: null,
+    ratingStudyFilter: null,
     addForm: { level: "n5", deck: "vocab", front: "", reading: "", meaning: "", example: "" }
   };
 
@@ -97,8 +99,8 @@
     render();
   }
 
-  function setFilter(f) { state.filter = f; buildQueue(); render(); }
-  function setLevel(l) { state.level = l; buildQueue(); render(); }
+  function setFilter(f) { state.ratingStudyFilter = null; state.filter = f; buildQueue(); render(); }
+  function setLevel(l) { state.ratingStudyFilter = null; state.level = l; buildQueue(); render(); }
   function setView(v) { state.view = v; render(); }
 
   function setStudyMode(mode) {
@@ -253,7 +255,7 @@
 
   // ---------- Tabs ----------
   function renderViewTabs() {
-    var views = [["study", "Study"], ["browse", "Browse deck"], ["add", "Add card"], ["stats", "Stats"]];
+    var views = [["study", "Study"], ["write", "Write kanji"], ["browse", "Browse deck"], ["add", "Add card"], ["stats", "Stats"]];
     return el("div", { class: "tabs" }, views.map(function (v) {
       return el("div", { class: "tab" + (state.view === v[0] ? " active" : ""), onClick: function () { setView(v[0]); }, text: v[1] });
     }));
@@ -314,6 +316,77 @@
     });
   }
 
+  function ratingMeta(key) {
+    if (key === "hard") return { key: "hard", icon: "🔴", label: "Hard" };
+    if (key === "good") return { key: "good", icon: "🟡", label: "Good" };
+    if (key === "easy") return { key: "easy", icon: "🟢", label: "Easy" };
+    return null;
+  }
+
+  function cardsWithRating(key) {
+    return poolForFilter().filter(function (c) {
+      var p = state.progress[c.id];
+      return p && p.lastGrade === key;
+    });
+  }
+
+  function startRatingStudy(key) {
+    var cards = cardsWithRating(key);
+    if (!cards.length) return;
+    state.ratingStudyFilter = key;
+    state.studyMode = "flip";
+    state.queue = cards.slice();
+    state.current = state.queue[0];
+    state.flipped = false;
+    state.typedValue = "";
+    state.typedChecked = false;
+    state.typedCorrect = null;
+    state.sessionSeen = 0;
+    state.view = "study";
+    persist();
+    render();
+  }
+
+  function exitRatingStudy() {
+    state.ratingStudyFilter = null;
+    buildQueue();
+    render();
+  }
+
+  function renderRatingGroups() {
+    var keys = ["hard", "good", "easy"];
+    var buttons = keys.map(function (key) {
+      var meta = ratingMeta(key);
+      var count = cardsWithRating(key).length;
+      return el("button", {
+        class: "rating-group " + key,
+        disabled: count ? null : "disabled",
+        onClick: function () { startRatingStudy(key); }
+      }, [
+        el("span", { class: "rating-group-icon", text: meta.icon }),
+        el("span", { class: "rating-group-label", text: meta.label }),
+        el("b", { text: String(count) }),
+        el("small", { text: count ? "study these" : "none yet" })
+      ]);
+    });
+    return el("div", { class: "rating-panel" }, [
+      el("div", { class: "rating-panel-copy" }, [
+        el("b", { text: "SRS rating groups" }),
+        el("span", { text: "Your latest Hard / Good / Easy rating. Tap a group to flip only those cards." })
+      ]),
+      el("div", { class: "rating-groups" }, buttons)
+    ]);
+  }
+
+  function renderRatingStudyBanner() {
+    if (!state.ratingStudyFilter) return null;
+    var meta = ratingMeta(state.ratingStudyFilter);
+    return el("div", { class: "rating-study-banner " + state.ratingStudyFilter }, [
+      el("span", { text: meta.icon + " Studying " + meta.label + " cards only" }),
+      el("button", { class: "browse-action", onClick: exitRatingStudy, text: "Back to normal study" })
+    ]);
+  }
+
   // ---------- Study ----------
   function renderStudy() {
     if (!state.current) {
@@ -326,6 +399,8 @@
     var card = state.current;
     var isKanji = card.deck === "kanji";
     var pieces = [renderProgressBar()];
+    var ratingBanner = renderRatingStudyBanner();
+    if (ratingBanner) pieces.push(ratingBanner);
 
     pieces.push(state.studyMode === "type" ? renderTypeCard(card, isKanji) : renderFlipCard(card, isKanji));
 
@@ -411,6 +486,53 @@
     }, [document.createTextNode(label), el("small", { text: sub })]);
   }
 
+
+  // ---------- Kanji writing practice ----------
+  function renderWritingPractice() {
+    var built = window.FlashcardData.levels[state.level].kanji || [];
+    var custom = state.customCards.filter(function (c) {
+      return c.level === state.level && c.deck === "kanji";
+    });
+    var cards = built.concat(custom).filter(function (c) {
+      return c.front && Array.from(c.front).length === 1;
+    });
+
+    if (!window.KanjiWriting) {
+      return el("div", { class: "empty-state" }, [
+        el("div", { class: "big", text: "書" }),
+        el("p", { text: "Writing practice could not load. Refresh the app and try again." })
+      ]);
+    }
+    return window.KanjiWriting.render({ cards: cards, level: state.level, startCardId: state.writeTargetId });
+  }
+
+  // ---------- Browse selection ----------
+  function selectBrowseCardForFlip(card) {
+    state.ratingStudyFilter = null;
+    state.studyMode = "flip";
+    state.flipped = false;
+    state.typedValue = "";
+    state.typedChecked = false;
+    state.typedCorrect = null;
+    state.queue = [card].concat(state.queue.filter(function (c) { return c.id !== card.id; }));
+    state.current = card;
+    state.view = "study";
+    persist();
+    render();
+  }
+
+  function canWriteCard(card) {
+    return card.deck === "kanji" && card.front && Array.from(card.front).length === 1;
+  }
+
+  function selectBrowseCardForWriting(card) {
+    state.ratingStudyFilter = null;
+    if (!canWriteCard(card)) { selectBrowseCardForFlip(card); return; }
+    state.writeTargetId = card.id;
+    state.view = "write";
+    render();
+  }
+
   // ---------- Browse ----------
   function renderBrowse() {
     var now = Date.now();
@@ -422,17 +544,34 @@
       else if (p.interval >= 21) badge = el("span", { class: "badge mastered", text: "mastered" });
       else badge = el("span", { class: "badge", text: "learning" });
 
+      var rating = p && ratingMeta(p.lastGrade);
+      var ratingBadge = rating ? el("span", { class: "rating-badge " + rating.key, text: rating.icon + " " + rating.label }) : el("span", { class: "rating-badge unrated", text: "Unrated" });
+
+      var writable = canWriteCard(c);
+      var jpButton = el("button", {
+        class: "browse-pick jp",
+        title: writable ? "Write this kanji" : "Study this card",
+        onClick: function () { writable ? selectBrowseCardForWriting(c) : selectBrowseCardForFlip(c); },
+        text: c.front
+      });
+      var actions = el("div", { class: "browse-actions" }, [
+        el("button", { class: "browse-action", onClick: function () { selectBrowseCardForFlip(c); }, text: "Flip" }),
+        writable ? el("button", { class: "browse-action write", onClick: function () { selectBrowseCardForWriting(c); }, text: "Write" }) : null
+      ]);
+
       var rowChildren = [
-        el("div", { class: "jp", text: c.front }),
+        jpButton,
         el("div", { class: "rd", text: c.reading }),
         el("div", { class: "mn", text: c.meaning }),
-        badge
+        ratingBadge,
+        badge,
+        actions
       ];
       if (c.custom) rowChildren.push(el("button", { class: "delete-btn", onClick: function () { deleteCustomCard(c.id); }, text: "\u2715" }));
 
       return el("div", { class: "browse-row" + (c.custom ? " is-custom" : "") }, rowChildren);
     });
-    return el("div", { class: "browse-list" }, rows);
+    return el("div", {}, [renderRatingGroups(), el("div", { class: "browse-list" }, rows)]);
   }
 
   // ---------- Add card ----------
@@ -556,11 +695,12 @@
 
     shell.appendChild(renderViewTabs());
     shell.appendChild(renderLevelTabs());
-    shell.appendChild(renderFilterTabs());
+    if (state.view !== "write") shell.appendChild(renderFilterTabs());
     if (state.view === "study") shell.appendChild(renderModeToggle());
     if (state.view === "study" || state.view === "browse") shell.appendChild(renderStatRow());
 
     if (state.view === "study") shell.appendChild(renderStudy());
+    else if (state.view === "write") shell.appendChild(renderWritingPractice());
     else if (state.view === "browse") shell.appendChild(renderBrowse());
     else if (state.view === "add") shell.appendChild(renderAddForm());
     else if (state.view === "stats") shell.appendChild(renderStatsView());

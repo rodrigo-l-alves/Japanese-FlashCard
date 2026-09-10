@@ -341,11 +341,16 @@
   }
 
   function renderFlipCard(card, isKanji) {
-    var faceFront = el("div", { class: "face front" }, [
+    // .face only handles 3D positioning/backface-visibility; everything
+    // that's actually painted (border/background/shadow) lives on the
+    // nested .face-surface — see the CSS comment for why this split
+    // matters on iOS Safari.
+    var frontSurface = el("div", { class: "face-surface" }, [
       el("div", { class: "corner-mark", text: isKanji ? "kanji" : "vocabulary" }),
       el("div", { class: "prompt" + (isKanji ? "" : " vocab"), text: card.front }),
       el("div", { class: "hint", text: "tap to reveal" })
     ]);
+    var faceFront = el("div", { class: "face front" }, [frontSurface]);
 
     var backChildren = [
       el("div", { class: "corner-mark", text: isKanji ? "kanji" : "vocabulary" }),
@@ -355,7 +360,8 @@
     if (card.example) backChildren.push(el("div", { class: "example", text: card.example }));
     backChildren.push(audioButton(card));
 
-    var faceBack = el("div", { class: "face back" }, backChildren);
+    var backSurface = el("div", { class: "face-surface" }, backChildren);
+    var faceBack = el("div", { class: "face back" }, [backSurface]);
     var cardEl = el("div", { class: "card" + (state.flipped ? " flipped" : ""), onClick: flip }, [faceFront, faceBack]);
     return el("div", { class: "stage" }, [cardEl]);
   }

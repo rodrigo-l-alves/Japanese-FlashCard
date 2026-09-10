@@ -400,12 +400,31 @@ select:focus-visible,
 .card.flipped,
 .card.flipped:hover { transform: rotateY(180deg); }
 .card:not(.flipped):hover { transform: translateY(-2px); }
-.card:hover .face { border-color: rgba(39, 71, 96, .28); }
-.card.flipped:hover .face { border-color: var(--line-strong); }
+.card:hover .face-surface { border-color: rgba(39, 71, 96, .28); }
+.card.flipped:hover .face-surface { border-color: var(--line-strong); }
 
 .face {
+  /* This layer ONLY handles the 3D positioning/hiding. iOS Safari has a
+     long-standing bug where an element with backface-visibility: hidden
+     that ALSO paints a box-shadow (or, in some versions, overflow: hidden
+     content) fails to hide its backface correctly mid-rotation, letting
+     the "hidden" face's shadow/background bleed through during the flip.
+     So this element stays visually empty, and everything that's actually
+     painted (border, background, shadow, rounded-corner clipping) lives
+     on .face-surface below instead. */
   position: absolute;
   inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  -webkit-transform: translateZ(0); /* forces its own compositing layer on iOS */
+}
+
+.face.back { transform: rotateY(180deg); }
+
+.face-surface {
+  position: relative;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -414,8 +433,6 @@ select:focus-visible,
   padding: 30px;
   border: 1px solid var(--line-strong);
   border-radius: 24px;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
   background:
     radial-gradient(circle at 15% 10%, rgba(183, 71, 67, 0.04), transparent 18rem),
     radial-gradient(circle at 90% 90%, rgba(49, 76, 112, 0.055), transparent 20rem),
@@ -424,7 +441,7 @@ select:focus-visible,
   text-align: center;
 }
 
-.face::before {
+.face-surface::before {
   content: "";
   position: absolute;
   top: 0;
@@ -436,7 +453,7 @@ select:focus-visible,
   opacity: 0.72;
 }
 
-.face::after {
+.face-surface::after {
   content: "";
   position: absolute;
   right: -34px;
@@ -452,8 +469,6 @@ select:focus-visible,
     radial-gradient(circle at 80px 100%, transparent 38px, var(--line) 39px, transparent 40px),
     radial-gradient(circle at 120px 100%, transparent 38px, var(--line) 39px, transparent 40px);
 }
-
-.face.back { transform: rotateY(180deg); }
 
 .corner-mark {
   position: absolute;
@@ -989,7 +1004,7 @@ select:focus-visible,
   .masthead .sub { display: none; }
   .shell { max-width: 100%; }
   .card, .type-stage { min-height: 310px; height: 310px; }
-  .face { padding: 25px 20px; }
+  .face-surface { padding: 25px 20px; }
   .stat-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .browse-row {
     grid-template-columns: minmax(58px, .7fr) minmax(94px, 1fr) auto auto;

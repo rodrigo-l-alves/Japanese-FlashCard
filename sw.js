@@ -1,5 +1,5 @@
 // Bump this version any time you update the app files, so old caches get replaced.
-var CACHE_NAME = "n5-flashcards-v2";
+var CACHE_NAME = "n5-flashcards-v3";
 var ASSETS = [
   "./",
   "./index.html",

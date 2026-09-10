@@ -368,6 +368,7 @@ select:focus-visible,
 .stage {
   position: relative;
   perspective: 1400px;
+  -webkit-perspective: 1400px;
   margin-bottom: 17px;
 }
 
@@ -390,36 +391,57 @@ select:focus-visible,
   width: 100%;
   height: 340px;
   cursor: pointer;
+  transform: rotateY(0deg);
+  -webkit-transform: rotateY(0deg);
   transform-style: preserve-3d;
   -webkit-transform-style: preserve-3d;
+  will-change: transform;
   transition: transform 0.5s cubic-bezier(.2,.75,.18,1);
+  -webkit-transition: -webkit-transform 0.5s cubic-bezier(.2,.75,.18,1);
 }
 
-/* Keep hover effects off the 3D transform itself. Applying filter/transform here
-   can cause some browsers to momentarily paint the hidden front face. */
-.card.flipped,
-.card.flipped:hover { transform: rotateY(180deg); }
-.card:not(.flipped):hover { transform: translateY(-2px); }
-.card:hover .face-surface { border-color: rgba(39, 71, 96, .28); }
-.card.flipped:hover .face-surface { border-color: var(--line-strong); }
+.card.flipped {
+  transform: rotateY(180deg);
+  -webkit-transform: rotateY(180deg);
+}
+
+/* iOS emulates :hover after a tap. Keep hover transforms to real hover devices
+   so a synthetic mobile hover state cannot compete with the flip transform. */
+@media (hover: hover) and (pointer: fine) {
+  .card:not(.flipped):hover {
+    transform: translateY(-2px) rotateY(0deg);
+    -webkit-transform: translateY(-2px) rotateY(0deg);
+  }
+  .card.flipped:hover {
+    transform: translateY(-2px) rotateY(180deg);
+    -webkit-transform: translateY(-2px) rotateY(180deg);
+  }
+  .card:hover .face-surface { border-color: rgba(39, 71, 96, .28); }
+  .card.flipped:hover .face-surface { border-color: var(--line-strong); }
+}
 
 .face {
-  /* This layer ONLY handles the 3D positioning/hiding. iOS Safari has a
-     long-standing bug where an element with backface-visibility: hidden
-     that ALSO paints a box-shadow (or, in some versions, overflow: hidden
-     content) fails to hide its backface correctly mid-rotation, letting
-     the "hidden" face's shadow/background bleed through during the flip.
-     So this element stays visually empty, and everything that's actually
-     painted (border, background, shadow, rounded-corner clipping) lives
-     on .face-surface below instead. */
+  /* Keep the 3D/hiding layer visually empty. The nested surface paints the
+     background/shadow so Safari only has to composite a simple hidden face. */
   position: absolute;
   inset: 0;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
-  -webkit-transform: translateZ(0); /* forces its own compositing layer on iOS */
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
 }
 
-.face.back { transform: rotateY(180deg); }
+/* Give WebKit explicit transforms for both faces. A tiny Z separation avoids
+   the two planes becoming coplanar at the 90deg midpoint on iPhone Safari. */
+.face.front {
+  transform: rotateY(0deg) translateZ(0.1px);
+  -webkit-transform: rotateY(0deg) translateZ(0.1px);
+}
+
+.face.back {
+  transform: rotateY(180deg) translateZ(0.1px);
+  -webkit-transform: rotateY(180deg) translateZ(0.1px);
+}
 
 .face-surface {
   position: relative;

@@ -1,8 +1,8 @@
-// App shell cache. v8 forces clients off stale pre-writing builds.
-var CACHE_NAME = "n5-flashcards-v8";
+// App shell cache. v10 removes the Again grading action from the study UI.
+var CACHE_NAME = "n5-flashcards-v10";
 var ASSETS = [
-  "./", "./index.html", "./style.css?v=8", "./data.js", "./storage.js",
-  "./srs.js", "./audio.js", "./romanji.js", "./writing.js?v=8", "./app.js?v=8",
+  "./", "./index.html", "./style.css?v=10", "./data.js", "./storage.js",
+  "./srs.js", "./audio.js", "./romanji.js", "./writing.js?v=10", "./app.js?v=10",
   "./manifest.json", "./icon-192.png", "./icon-512.png"
 ];
 

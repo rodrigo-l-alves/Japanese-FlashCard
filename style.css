@@ -307,7 +307,7 @@ select:focus-visible,
 /* ---------- Study summary ---------- */
 .stat-row {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
   margin: 18px 0 20px;
   color: var(--ink-soft);
@@ -695,7 +695,7 @@ select:focus-visible,
 /* ---------- Review grading ---------- */
 .grade-row {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 9px;
 }
 
@@ -751,8 +751,8 @@ select:focus-visible,
 }
 
 .grade-btn.again { color: var(--seal); }
-.grade-btn.hard { color: var(--gold); }
-.grade-btn.good { color: var(--indigo); }
+.grade-btn.hard { color: var(--seal); }
+.grade-btn.good { color: var(--gold); }
 .grade-btn.easy { color: var(--green); }
 .grade-btn:not(:disabled).again:hover { background: var(--seal-soft); }
 .grade-btn:not(:disabled).hard:hover { background: var(--gold-soft); }
@@ -1417,7 +1417,6 @@ select:focus-visible,
 .rating-badge.hard { color: var(--seal); background: var(--seal-soft); }
 .rating-badge.good { color: var(--gold); background: var(--gold-soft); }
 .rating-badge.easy { color: var(--green); background: var(--green-soft); }
-.rating-badge.unrated { color: var(--ink-faint); background: rgba(255,255,255,.12); }
 .rating-study-banner {
   margin: 0 2px 12px;
   padding: 9px 10px;
@@ -1449,3 +1448,5 @@ select:focus-visible,
   .browse-row { grid-template-columns: minmax(58px,.8fr) minmax(82px,1.1fr) auto auto auto auto; }
   .rating-study-banner { align-items: flex-start; flex-direction: column; }
 }
+
+.rating-finished .rating-return-btn { margin-top: 10px; }

@@ -353,6 +353,13 @@
     render();
   }
 
+  function returnToRatingGroups() {
+    state.ratingStudyFilter = null;
+    state.view = "browse";
+    buildQueue();
+    render();
+  }
+
   function renderRatingGroups() {
     var keys = ["hard", "good", "easy"];
     var buttons = keys.map(function (key) {
@@ -390,6 +397,14 @@
   // ---------- Study ----------
   function renderStudy() {
     if (!state.current) {
+      if (state.ratingStudyFilter) {
+        var finishedMeta = ratingMeta(state.ratingStudyFilter);
+        return el("div", { class: "empty-state rating-finished" }, [
+          el("div", { class: "big", text: "✓" }),
+          el("p", { text: "No " + finishedMeta.label + " cards left in this group." }),
+          el("button", { class: "check-btn rating-return-btn", onClick: returnToRatingGroups, text: "Return to rating groups" })
+        ]);
+      }
       return el("div", { class: "empty-state" }, [
         el("div", { class: "big", text: "\u3088\u304f\u3067\u304d\u307e\u3057\u305f" }),
         el("p", { text: "Nothing left to review right now. Every due card is cleared \u2014 come back later, switch decks above, or add more cards." })
@@ -406,7 +421,6 @@
 
     var showGrades = state.studyMode === "type" ? state.typedChecked : state.flipped;
     pieces.push(el("div", { class: "grade-row" }, [
-      gradeBtn("again", "Again", "<1d", !showGrades),
       gradeBtn("hard", "Hard", "short", !showGrades),
       gradeBtn("good", "Good", "normal", !showGrades),
       gradeBtn("easy", "Easy", "longer", !showGrades)
@@ -545,7 +559,7 @@
       else badge = el("span", { class: "badge", text: "learning" });
 
       var rating = p && ratingMeta(p.lastGrade);
-      var ratingBadge = rating ? el("span", { class: "rating-badge " + rating.key, text: rating.icon + " " + rating.label }) : el("span", { class: "rating-badge unrated", text: "Unrated" });
+      var ratingBadge = rating ? el("span", { class: "rating-badge " + rating.key, text: rating.icon + " " + rating.label }) : null;
 
       var writable = canWriteCard(c);
       var jpButton = el("button", {
@@ -714,16 +728,14 @@
     if (state.studyMode === "flip") {
       if (e.code === "Space") { e.preventDefault(); flip(); }
       if (state.flipped) {
-        if (e.key === "1") gradeCard("again");
-        if (e.key === "2") gradeCard("hard");
-        if (e.key === "3") gradeCard("good");
-        if (e.key === "4") gradeCard("easy");
+        if (e.key === "1") gradeCard("hard");
+        if (e.key === "2") gradeCard("good");
+        if (e.key === "3") gradeCard("easy");
       }
     } else if (state.typedChecked && document.activeElement.tagName !== "INPUT") {
-      if (e.key === "1") gradeCard("again");
-      if (e.key === "2") gradeCard("hard");
-      if (e.key === "3") gradeCard("good");
-      if (e.key === "4") gradeCard("easy");
+      if (e.key === "1") gradeCard("hard");
+      if (e.key === "2") gradeCard("good");
+      if (e.key === "3") gradeCard("easy");
     }
   });
 

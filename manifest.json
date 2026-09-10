@@ -1,0 +1,16 @@
+{
+  "name": "Japanese Flashcards · N5 / N4",
+  "short_name": "N5 Flashcards",
+  "description": "A calm, focused Japanese N5 and N4 flashcard study app.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f6f0e7",
+  "theme_color": "#f6f0e7",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

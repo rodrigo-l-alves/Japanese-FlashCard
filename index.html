@@ -3,8 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>N5 Flashcards</title>
+  <meta name="theme-color" content="#f6f0e7">
+  <meta name="description" content="A calm, focused Japanese N5 and N4 flashcard study app.">
+  <title>Japanese Flashcards · N5 / N4</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon-192.png">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="N5 Flashcards">
 </head>
 <body>
   <div id="app-root"></div>
@@ -15,5 +23,14 @@
   <script src="audio.js"></script>
   <script src="romanji.js"></script>
   <script src="app.js"></script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", function () {
+        navigator.serviceWorker.register("sw.js").catch(function (err) {
+          console.error("SW registration failed:", err);
+        });
+      });
+    }
+  </script>
 </body>
 </html>

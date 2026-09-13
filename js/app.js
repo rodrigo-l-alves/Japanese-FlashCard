@@ -347,6 +347,25 @@
     render();
   }
 
+  function shuffleArray(arr) {
+    for (var i = arr.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+    }
+    return arr;
+  }
+
+  function shuffleRatingQueue() {
+    if (!state.ratingStudyFilter || state.queue.length < 2) return;
+    shuffleArray(state.queue);
+    state.current = state.queue[0];
+    state.flipped = false;
+    state.typedValue = "";
+    state.typedChecked = false;
+    state.typedCorrect = null;
+    render();
+  }
+
   function exitRatingStudy() {
     state.ratingStudyFilter = null;
     buildQueue();
@@ -390,7 +409,10 @@
     var meta = ratingMeta(state.ratingStudyFilter);
     return el("div", { class: "rating-study-banner " + state.ratingStudyFilter }, [
       el("span", { text: meta.icon + " Studying " + meta.label + " cards only" }),
-      el("button", { class: "browse-action", onClick: exitRatingStudy, text: "Back to normal study" })
+      el("div", { class: "rating-study-actions" }, [
+        el("button", { class: "browse-action", onClick: shuffleRatingQueue, text: "\ud83d\udd00 Random" }),
+        el("button", { class: "browse-action", onClick: exitRatingStudy, text: "Back to normal study" })
+      ])
     ]);
   }
 

@@ -1435,6 +1435,8 @@ select:focus-visible,
 .rating-study-banner.good { border-color: rgba(174,135,77,.35); }
 .rating-study-banner.easy { border-color: rgba(85,122,90,.35); }
 
+.rating-study-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
 @media (max-width: 640px) {
   .browse-row { grid-template-columns: minmax(62px,.8fr) minmax(88px,1.15fr) auto auto auto auto; gap: 7px; }
   .rating-groups { gap: 5px; }

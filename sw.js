@@ -1,8 +1,8 @@
-// App shell cache. v10 removes the Again grading action from the study UI.
-var CACHE_NAME = "n5-flashcards-v10";
+// App shell cache. v11 adds a Random shuffle button to rating-group study sessions.
+var CACHE_NAME = "n5-flashcards-v11";
 var ASSETS = [
-  "./", "./index.html", "./css/style.css?v=10", "./js/data.js", "./js/storage.js",
-  "./js/srs.js", "./js/audio.js", "./js/romanji.js", "./js/writing.js?v=10", "./js/app.js?v=10",
+  "./", "./index.html", "./css/style.css?v=11", "./js/data.js", "./js/storage.js",
+  "./js/srs.js", "./js/audio.js", "./js/romanji.js", "./js/writing.js?v=11", "./js/app.js?v=11",
   "./manifest.json", "./icons/icon-192.png", "./icons/icon-512.png"
 ];
 

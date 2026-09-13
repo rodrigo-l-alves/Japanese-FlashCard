@@ -1,9 +1,9 @@
 // App shell cache. v10 removes the Again grading action from the study UI.
 var CACHE_NAME = "n5-flashcards-v10";
 var ASSETS = [
-  "./", "./index.html", "./style.css?v=10", "./data.js", "./storage.js",
-  "./srs.js", "./audio.js", "./romanji.js", "./writing.js?v=10", "./app.js?v=10",
-  "./manifest.json", "./icon-192.png", "./icon-512.png"
+  "./", "./index.html", "./css/style.css?v=10", "./js/data.js", "./js/storage.js",
+  "./js/srs.js", "./js/audio.js", "./js/romanji.js", "./js/writing.js?v=10", "./js/app.js?v=10",
+  "./manifest.json", "./icons/icon-192.png", "./icons/icon-512.png"
 ];
 
 self.addEventListener("install", function (event) {

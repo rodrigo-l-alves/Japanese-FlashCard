@@ -97,6 +97,19 @@
     return "Write from memory. If you miss a stroke, the app briefly reveals the next one.";
   }
 
+  function eyeIconSVG(open) {
+    if (open) {
+      return '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">' +
+        '<path fill="currentColor" d="M12 5c-5.2 0-9.4 3.4-11 7 1.6 3.6 5.8 7 11 7s9.4-3.4 11-7c-1.6-3.6-5.8-7-11-7zm0 11.5A4.5 4.5 0 1 1 12 7.5a4.5 4.5 0 0 1 0 9z"/>' +
+        '<circle cx="12" cy="12" r="2.2" fill="currentColor"/>' +
+        '</svg>';
+    }
+    return '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">' +
+      '<path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M3.5 12S7.7 6.8 12 6.8 20.5 12 20.5 12"/>' +
+      '<path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M2.5 4.5l19 15"/>' +
+      '</svg>';
+  }
+
   function render(options) {
     var cards = options.cards || [];
     var level = options.level || "n5";
@@ -145,12 +158,33 @@
       var savedStage = Number(progress[manualStageKey]);
       var stage = (savedStage >= 0 && savedStage <= 2) ? savedStage : stageFor(stats.successes || 0);
 
+      var revealed = false; // resets every time a card/stage is (re)built
+      var kanjiEl = el("div", { class: "writing-kanji" + (stage === 2 ? " blurred" : ""), text: ch });
+
+      var kanjiRow = [kanjiEl];
+      if (stage === 2) {
+        var eyeBtn = el("button", {
+          type: "button",
+          class: "writing-eye-toggle",
+          "aria-label": "Show kanji",
+          "aria-pressed": "false"
+        });
+        eyeBtn.innerHTML = eyeIconSVG(false);
+        eyeBtn.addEventListener("click", function () {
+          revealed = !revealed;
+          kanjiEl.classList.toggle("blurred", !revealed);
+          eyeBtn.innerHTML = eyeIconSVG(revealed);
+          eyeBtn.setAttribute("aria-label", revealed ? "Hide kanji" : "Show kanji");
+          eyeBtn.setAttribute("aria-pressed", revealed ? "true" : "false");
+        });
+        kanjiRow = [el("div", { class: "writing-kanji-row" }, [kanjiEl, eyeBtn])];
+      }
+
       var meta = el("div", { class: "writing-meta" }, [
         el("button", { class: "write-nav", onClick: function () { showCard(index - 1); }, text: "‹" }),
-        el("div", { class: "writing-kanji-info" }, [
-          el("div", { class: "writing-kanji", text: ch }),
+        el("div", { class: "writing-kanji-info" }, kanjiRow.concat([
           el("div", { class: "writing-reading", text: card.reading + " · " + card.meaning })
-        ]),
+        ])),
         el("button", { class: "write-nav", onClick: function () { showCard(index + 1); }, text: "›" })
       ]);
 

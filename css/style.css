@@ -1149,6 +1149,35 @@ select:focus-visible,
   font-size: 42px;
   line-height: 1;
 }
+.writing-kanji.blurred {
+  filter: blur(9px);
+  user-select: none;
+  transition: filter .15s ease;
+}
+.writing-kanji-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.writing-eye-toggle {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--paper-solid);
+  color: var(--ink-soft);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.writing-eye-toggle[aria-pressed="true"] {
+  color: var(--ink);
+  border-color: var(--line-strong);
+}
 .writing-reading {
   margin-top: 7px;
   overflow: hidden;

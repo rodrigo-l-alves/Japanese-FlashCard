@@ -21,6 +21,7 @@
     addFormError: "",
     writeTargetId: null,
     ratingStudyFilter: null,
+    writeQueue: null,
     addForm: { level: "n5", deck: "vocab", front: "", reading: "", meaning: "", example: "" }
   };
 
@@ -365,6 +366,10 @@
     });
   }
 
+  function kanjiOnly(cards) {
+    return cards.filter(function (c) { return c.deck === "kanji" && c.front && Array.from(c.front).length === 1; });
+  }
+
   function startRatingStudy(key) {
     var cards = cardsWithRating(key);
     if (!cards.length) return;
@@ -372,6 +377,7 @@
     state.studyMode = "flip";
     state.queue = cards.slice();
     state.current = state.queue[0];
+    state.writeQueue = null;
     state.flipped = false;
     state.typedValue = "";
     state.typedChecked = false;
@@ -391,7 +397,15 @@
   }
 
   function shuffleRatingQueue() {
-    if (!state.ratingStudyFilter || state.queue.length < 2) return;
+    if (!state.ratingStudyFilter) return;
+    if (state.view === "write") {
+      if (!state.writeQueue || state.writeQueue.length < 2) return;
+      shuffleArray(state.writeQueue);
+      state.writeTargetId = state.writeQueue[0].id;
+      render();
+      return;
+    }
+    if (state.queue.length < 2) return;
     shuffleArray(state.queue);
     state.current = state.queue[0];
     state.flipped = false;
@@ -401,8 +415,25 @@
     render();
   }
 
+  function switchRatingViewToWrite() {
+    if (!state.ratingStudyFilter) return;
+    var cards = kanjiOnly(cardsWithRating(state.ratingStudyFilter));
+    state.writeQueue = cards;
+    state.writeTargetId = cards.length ? cards[0].id : null;
+    state.view = "write";
+    render();
+  }
+
+  function switchRatingViewToStudy() {
+    if (!state.ratingStudyFilter) return;
+    state.view = "study";
+    render();
+  }
+
   function exitRatingStudy() {
     state.ratingStudyFilter = null;
+    state.writeQueue = null;
+    state.view = "study";
     buildQueue();
     render();
   }
@@ -442,10 +473,15 @@
   function renderRatingStudyBanner() {
     if (!state.ratingStudyFilter) return null;
     var meta = ratingMeta(state.ratingStudyFilter);
+    var isWriting = state.view === "write";
+    var toggleBtn = isWriting
+      ? el("button", { class: "browse-action", onClick: switchRatingViewToStudy, text: "\ud83d\udd01 Flip cards" })
+      : el("button", { class: "browse-action write", onClick: switchRatingViewToWrite, text: "\u270d\ufe0f Write" });
     return el("div", { class: "rating-study-banner " + state.ratingStudyFilter }, [
-      el("span", { text: meta.icon + " Studying " + meta.label + " cards only" }),
+      el("span", { text: meta.icon + " Studying " + meta.label + " cards only" + (isWriting ? " \u00b7 writing practice" : "") }),
       el("div", { class: "rating-study-actions" }, [
         el("button", { class: "browse-action", onClick: shuffleRatingQueue, text: "\ud83d\udd00 Random" }),
+        toggleBtn,
         el("button", { class: "browse-action", onClick: exitRatingStudy, text: "Back to normal study" })
       ])
     ]);
@@ -560,21 +596,48 @@
 
   // ---------- Kanji writing practice ----------
   function renderWritingPractice() {
-    var built = window.FlashcardData.levels[state.level].kanji || [];
-    var custom = state.customCards.filter(function (c) {
-      return c.level === state.level && c.deck === "kanji";
-    });
-    var cards = built.concat(custom).filter(function (c) {
-      return c.front && Array.from(c.front).length === 1;
-    });
+    var usingRatingQueue = !!state.ratingStudyFilter;
+    var cards;
+    if (usingRatingQueue) {
+      cards = state.writeQueue || [];
+    } else {
+      var built = window.FlashcardData.levels[state.level].kanji || [];
+      var custom = state.customCards.filter(function (c) {
+        return c.level === state.level && c.deck === "kanji";
+      });
+      cards = built.concat(custom).filter(function (c) {
+        return c.front && Array.from(c.front).length === 1;
+      });
+    }
+
+    var pieces = [];
+    var ratingBanner = renderRatingStudyBanner();
+    if (ratingBanner) pieces.push(ratingBanner);
+
+    if (!cards.length) {
+      pieces.push(el("div", { class: "empty-state" }, [
+        el("div", { class: "big", text: "書" }),
+        el("p", { text: usingRatingQueue
+          ? "No single-character kanji in this rating group."
+          : "No single-character kanji are available in this level." })
+      ]));
+      return el("div", {}, pieces);
+    }
 
     if (!window.KanjiWriting) {
-      return el("div", { class: "empty-state" }, [
+      pieces.push(el("div", { class: "empty-state" }, [
         el("div", { class: "big", text: "書" }),
         el("p", { text: "Writing practice could not load. Refresh the app and try again." })
-      ]);
+      ]));
+      return el("div", {}, pieces);
     }
-    return window.KanjiWriting.render({ cards: cards, level: state.level, startCardId: state.writeTargetId });
+
+    // Namespaced separately from the plain level key so a rating-group write
+    // session never clobbers (or gets clobbered by) the "Write kanji" tab's
+    // own remembered position for the full deck.
+    var levelKey = usingRatingQueue ? (state.level + "-" + state.ratingStudyFilter + "-rating") : state.level;
+    pieces.push(window.KanjiWriting.render({ cards: cards, level: levelKey, startCardId: state.writeTargetId }));
+    return el("div", {}, pieces);
   }
 
   // ---------- Browse selection ----------

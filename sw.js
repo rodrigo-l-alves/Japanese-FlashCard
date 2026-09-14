@@ -1,8 +1,8 @@
-// App shell cache. v11 adds a Random shuffle button to rating-group study sessions.
-var CACHE_NAME = "n5-flashcards-v11";
+// App shell cache. v13 moves kanji used by N5 vocabulary from the N4 deck into the N5 deck.
+var CACHE_NAME = "n5-flashcards-v13";
 var ASSETS = [
-  "./", "./index.html", "./css/style.css?v=11", "./js/data.js", "./js/storage.js",
-  "./js/srs.js", "./js/audio.js", "./js/romanji.js", "./js/writing.js?v=11", "./js/app.js?v=11",
+  "./", "./index.html", "./css/style.css?v=13", "./js/data.js?v=13", "./js/storage.js",
+  "./js/srs.js", "./js/audio.js", "./js/romanji.js", "./js/writing.js?v=13", "./js/app.js?v=13",
   "./manifest.json", "./icons/icon-192.png", "./icons/icon-512.png"
 ];
 

@@ -32,8 +32,42 @@
     document.documentElement.setAttribute("data-theme", state.theme);
   }
 
+  // Card ids are positional, so reorganising the decks shifts them. Each entry
+  // below is a one-time remap, applied in order and flagged once done.
+  var ID_MIGRATIONS = [
+    { flag: "idsMigratedV11", map: "LEGACY_ID_MAP" },
+    { flag: "idsMigratedV12", map: "LEGACY_ID_MAP_V12" }
+  ];
+
+  function migrateIds(data) {
+    if (!data) return data;
+    var changed = false;
+
+    ID_MIGRATIONS.forEach(function (step) {
+      if (data[step.flag]) return;
+      var map = window.FlashcardData[step.map] || {};
+      var oldProgress = data.progress || {};
+      var next = {};
+
+      Object.keys(oldProgress).forEach(function (oldId) {
+        var newId = map[oldId] || oldId;
+        // If two cards merge onto one id, keep whichever is scheduled sooner
+        // so nothing silently skips a review.
+        if (next[newId] && next[newId].due <= oldProgress[oldId].due) return;
+        next[newId] = oldProgress[oldId];
+      });
+
+      data.progress = next;
+      data[step.flag] = true;
+      changed = true;
+    });
+
+    if (changed) window.Storage.save(data);
+    return data;
+  }
+
   function loadState() {
-    var data = window.Storage.load();
+    var data = migrateIds(window.Storage.load());
     state.progress = (data && data.progress) || {};
     state.dailyStats = (data && data.dailyStats) || {};
     state.customCards = (data && data.customCards) || [];
@@ -179,6 +213,7 @@
   function doImport(file) {
     window.Storage.importJSON(file, function (err, data) {
       if (err) { state.importError = "Couldn't read that file."; render(); return; }
+      data = migrateIds(data); // an older backup may still use pre-v11 ids
       state.progress = (data && data.progress) || {};
       state.dailyStats = (data && data.dailyStats) || {};
       state.customCards = (data && data.customCards) || [];

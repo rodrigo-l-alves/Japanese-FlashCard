@@ -22,8 +22,20 @@
     writeTargetId: null,
     ratingStudyFilter: null,
     writeQueue: null,
-    addForm: { level: "n5", deck: "vocab", front: "", reading: "", meaning: "", example: "" }
+    // onyomi/kunyomi are plain text here (e.g. "ハチ" or "つめ-たい・ひ-える")
+    // and only turned into arrays in submitAddForm, right before they're
+    // saved onto a card -- see parseReadingList.
+    addForm: { level: "n5", deck: "vocab", front: "", reading: "", meaning: "", example: "", onyomi: "", kunyomi: "" }
   };
+
+  // Splits free-typed on'yomi/kun'yomi text (e.g. "ハチ、キュウ" or "つめ-たい・ひ-える")
+  // into a clean array of readings, same shape kanji-info.js already uses.
+  // Kept as a named export-free helper so both the add form and any future
+  // edit form can reuse it without duplicating the delimiter list.
+  function parseReadingList(str) {
+    if (!str) return [];
+    return String(str).split(/[・、,\/\s]+/).map(function (s) { return s.trim(); }).filter(Boolean);
+  }
 
   function pad(n) { return n < 10 ? "0" + n : String(n); }
   function dateKey(d) { return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); }
@@ -162,6 +174,7 @@
     if (cardEl) {
       cardEl.classList.toggle("flipped", state.flipped);
       updateGradeRowEnabled();
+      updateKanjiDetail();
       return;
     }
     render();
@@ -176,6 +189,22 @@
       if (showGrades) buttons[i].removeAttribute("disabled");
       else buttons[i].setAttribute("disabled", "disabled");
     }
+  }
+
+  // Insert/remove the kanji reading panel in place. flip() skips render(),
+  // so without this the panel built by renderStudy() never reaches the DOM
+  // when you flip a card.
+  function updateKanjiDetail() {
+    var showDetail = state.studyMode === "type" ? state.typedChecked : state.flipped;
+    var existing = document.querySelector(".kanji-detail-panel");
+    if (!showDetail) {
+      if (existing && existing.parentNode) existing.parentNode.removeChild(existing);
+      return;
+    }
+    if (existing) return;
+    var panel = renderKanjiDetail(state.current);
+    var gradeRow = document.querySelector(".grade-row");
+    if (panel && gradeRow && gradeRow.parentNode) gradeRow.parentNode.insertBefore(panel, gradeRow);
   }
 
   function submitTypedAnswer() {
@@ -236,14 +265,28 @@
       return;
     }
     var id = "c" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
-    state.customCards.push({
+    var card = {
       id: id, deck: f.deck, level: f.level, custom: true,
       front: f.front.trim(), reading: f.reading.trim(),
       meaning: f.meaning.trim(), example: f.example.trim() || null
-    });
+    };
+
+    // onyomi/kunyomi are optional and kanji-only. They're left off the
+    // object entirely (rather than saved as [] or "") when unused, so a
+    // card added without them is stored exactly like every card created
+    // before this feature existed -- old save files stay valid, and any
+    // future code that checks `if (card.onyomi)` still works untouched.
+    if (f.deck === "kanji") {
+      var onyomi = parseReadingList(f.onyomi);
+      var kunyomi = parseReadingList(f.kunyomi);
+      if (onyomi.length) card.onyomi = onyomi;
+      if (kunyomi.length) card.kunyomi = kunyomi;
+    }
+
+    state.customCards.push(card);
     state.addFormError = "";
     persist();
-    state.addForm = { level: f.level, deck: f.deck, front: "", reading: "", meaning: "", example: "" };
+    state.addForm = { level: f.level, deck: f.deck, front: "", reading: "", meaning: "", example: "", onyomi: "", kunyomi: "" };
     buildQueue();
     render();
   }
@@ -350,6 +393,60 @@
       onClick: function (e) { e.stopPropagation(); window.Speech.speak(card.reading.split("\u30fb")[0]); },
       text: "\ud83d\udd0a listen"
     });
+  }
+
+  // Onyomi/kunyomi + example-word panel shown under a kanji card once its
+  // back/answer is revealed. Sits outside the fixed-height flip card so it
+  // can hold as much as it needs without being clipped.
+  function renderKanjiDetail(card) {
+    if (!card || card.deck !== "kanji") return null;
+
+    // Defensive on purpose: built-in cards always get onyomi/kunyomi/examples
+    // from kanji-info.js, but custom cards (from the add form) may have only
+    // one of the two, or neither, or -- if the save format changes later --
+    // a shape this code doesn't expect. Coercing to arrays here means a
+    // missing or malformed field just means "nothing to show", never a
+    // crash, regardless of which app version wrote the saved JSON.
+    var onyomi = Array.isArray(card.onyomi) ? card.onyomi : [];
+    var kunyomi = Array.isArray(card.kunyomi) ? card.kunyomi : [];
+    var examples = Array.isArray(card.examples) ? card.examples : [];
+    if (!onyomi.length && !kunyomi.length && !examples.length) return null;
+
+    var rows = [];
+    if (onyomi.length) {
+      rows.push(el("div", { class: "kanji-reading-row" }, [
+        el("span", { class: "kanji-reading-label", text: "On'yomi" }),
+        el("span", { class: "kanji-reading-value", text: onyomi.join("\u3001") })
+      ]));
+    }
+    if (kunyomi.length) {
+      rows.push(el("div", { class: "kanji-reading-row" }, [
+        el("span", { class: "kanji-reading-label", text: "Kun'yomi" }),
+        el("span", { class: "kanji-reading-value", text: kunyomi.join("\u3001") })
+      ]));
+    }
+
+    var children = [];
+    if (rows.length) children.push(el("div", { class: "kanji-reading-types" }, rows));
+
+    if (examples.length) {
+      var items = examples.map(function (ex) {
+        return el("li", { class: "kanji-example-item" }, [
+          el("span", { class: "kanji-example-word" }, [
+            document.createTextNode(ex.word + " "),
+            el("span", { class: "kanji-example-reading", text: "(" + ex.reading + " \u00b7 " + ex.romaji + ")" })
+          ]),
+          el("span", { class: "kanji-example-meaning", text: ex.meaning })
+        ]);
+      });
+      children.push(el("div", { class: "kanji-examples" }, [
+        el("div", { class: "kanji-examples-label", text: "Example words" }),
+        el("ul", { class: "kanji-examples-list" }, items)
+      ]));
+    }
+
+    if (!children.length) return null;
+    return el("div", { class: "kanji-detail-panel" }, children);
   }
 
   function ratingMeta(key) {
@@ -513,6 +610,10 @@
     pieces.push(state.studyMode === "type" ? renderTypeCard(card, isKanji) : renderFlipCard(card, isKanji));
 
     var showGrades = state.studyMode === "type" ? state.typedChecked : state.flipped;
+    if (showGrades) {
+      var detail = renderKanjiDetail(card);
+      if (detail) pieces.push(detail);
+    }
     pieces.push(el("div", { class: "grade-row" }, [
       gradeBtn("hard", "Hard", "short", !showGrades),
       gradeBtn("good", "Good", "normal", !showGrades),
@@ -735,6 +836,12 @@
     ]));
     wrap.appendChild(field("Front (word / kanji)", "front"));
     wrap.appendChild(field("Reading (kana)", "reading"));
+    // On'yomi/kun'yomi only make sense for a kanji card, and are optional
+    // even then -- leave either blank and it's simply left off the card.
+    if (f.deck === "kanji") {
+      wrap.appendChild(field("On'yomi (optional, e.g. ハチ・キュウ)", "onyomi"));
+      wrap.appendChild(field("Kun'yomi (optional, e.g. つめ-たい・ひ-える)", "kunyomi"));
+    }
     wrap.appendChild(field("Meaning (English)", "meaning"));
     wrap.appendChild(field("Example sentence (optional)", "example"));
 

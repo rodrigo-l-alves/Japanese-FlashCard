@@ -71,7 +71,12 @@
     ["事","こと・じ","matter / thing"],["自","じ・し","self"],["館","かん","building / hall"],
     ["計","はかる・けい","measure / plan"],["明","あかるい・めい","bright / light"],["屋","や・おく","shop / roof"],
     ["楽","たのしい・らく","fun / music"],["切","きる・せつ","cut"],["仕","し","serve / attend to"],
-    ["転","ころがる・てん","roll / turn"],["野","の・や","field / plain"],["図","はかる・ず","diagram / plan"]
+    ["転","ころがる・てん","roll / turn"],["野","の・や","field / plain"],["図","はかる・ず","diagram / plan"],
+    ["財","ざい","wealth / property"],["布","ぬの・ふ","cloth"],["眼","がん","eye"],
+    ["鏡","かがみ・きょう","mirror"],["傘","かさ・さん","umbrella"],["靴","くつ","shoes"],
+    ["帽","ぼう","hat / cap"],["荷","に・か","load / cargo"],["球","たま・きゅう","ball / sphere"],
+    ["園","えん","garden / park"],["猫","ねこ","cat"],["冷","つめたい・れい","cold / to cool"],
+    ["蔵","くら・ぞう","storehouse"],["庫","こ","storehouse / warehouse"],["座","すわる・ざ","sit / seat"]
   ];
 
   var N5_VOCAB_RAW = [
@@ -102,7 +107,18 @@
     ["楽しい","たのしい","fun"],["嬉しい","うれしい","happy"],["悲しい","かなしい","sad"],
     ["好きです","すきです","to like"],["嫌いです","きらいです","to dislike"],["欲しい","ほしい","to want"],
     ["頑張る","がんばる","to try hard"],["行く","いく","to go"],["来る","くる","to come"],
-    ["食べる","たべる","to eat"],["飲む","のむ","to drink"]
+    ["食べる","たべる","to eat"],["飲む","のむ","to drink"],
+    ["財布","さいふ","wallet"],["眼鏡","めがね","glasses"],["傘","かさ","umbrella"],
+    ["靴","くつ","shoes"],["帽子","ぼうし","hat"],["荷物","にもつ","luggage / baggage"],
+    ["音楽","おんがく","music"],["映画","えいが","movie"],["写真","しゃしん","photograph"],
+    ["スポーツ","スポーツ","sport"],["野球","やきゅう","baseball"],["サッカー","サッカー","soccer"],
+    ["公園","こうえん","park"],["動物","どうぶつ","animal"],["犬","いぬ","dog"],
+    ["猫","ねこ","cat"],["天気","てんき","weather"],["冷蔵庫","れいぞうこ","refrigerator"],
+    ["買う","かう","to buy"],["見る","みる","to see / watch"],["聞く","きく","to hear / listen / ask"],
+    ["話す","はなす","to speak"],["書く","かく","to write"],["読む","よむ","to read"],
+    ["分かる","わかる","to understand"],["寝る","ねる","to sleep"],["起きる","おきる","to get up"],
+    ["座る","すわる","to sit"],["立つ","たつ","to stand"],["入る","はいる","to enter"],
+    ["出る","でる","to exit / leave"]
   ];
 
   // ---------- N4 ----------
@@ -189,7 +205,17 @@
     ["件","けん","matter / case"],["警","けい","warn / guard"],["察","さつ","guess / police"],
     ["救","すくう・きゅう","rescue"],["交","まじる・こう","mix / exchange"],["渋","しぶ・じゅう","astringent / hesitate"],
     ["滞","とどこおる・たい","stagnate"],["号","ごう","number / signal"],["免","まぬかれる・めん","exempt / license"],
-    ["許","ゆるす・きょ","permit"]
+    ["許","ゆるす・きょ","permit"],
+    ["性","せい","nature / gender"],["格","かく","status / standard"],["態","たい","state / condition"],
+    ["印","しるし・いん","seal / mark"],["象","しょう・ぞう","elephant / image"],["儀","ぎ","ceremony / rule"],
+    ["努","つとめる・ど","endeavor / strive"],["成","なる・せい","become / accomplish"],["功","こう","achievement / merit"],
+    ["敗","やぶれる・はい","defeat / failure"],["結","むすぶ・けつ","tie / conclude"],["婚","こん","marriage"],
+    ["恋","こい・れん","romantic love"],["夫","おっと・ふ","husband / man"],["婦","ふ","married woman / wife"],
+    ["値","ね・ち","price / value"],["段","だん","step / grade"],["給","きゅう","supply / wage"],
+    ["税","ぜい","tax"],["貯","ちょ","savings / store"],["契","ちぎる・けい","pledge / contract"],
+    ["保","たもつ・ほ","protect / guarantee"],["険","けわしい・けん","steep / risky"],["政","せい","government / politics"],
+    ["済","すむ・さい","settle / finish"],["化","ばける・か","change / -ization"],["伝","つたえる・でん","transmit / legend"],
+    ["統","とう","unite / govern"]
   ];
 
   var N4_VOCAB_RAW = [
@@ -238,7 +264,16 @@
     ["火事","かじ","fire (disaster)"],["事故","じこ","accident"],["事件","じけん","incident"],
     ["警察","けいさつ","police"],["救急車","きゅうきゅうしゃ","ambulance"],["交通","こうつう","traffic"],
     ["渋滞","じゅうたい","traffic jam"],["信号","しんごう","traffic light"],["運転","うんてん","driving"],
-    ["免許","めんきょ","license"]
+    ["免許","めんきょ","license"],
+    ["性格","せいかく","personality"],["態度","たいど","attitude"],["印象","いんしょう","impression"],
+    ["習慣","しゅうかん","habit / custom"],["礼儀","れいぎ","manners / etiquette"],["努力","どりょく","effort"],
+    ["成功","せいこう","success"],["失敗","しっぱい","failure"],["大変","たいへん","tough / awful"],
+    ["相手","あいて","partner / opponent"],["結婚","けっこん","marriage"],["恋人","こいびと","boyfriend / girlfriend"],
+    ["夫婦","ふうふ","married couple"],["値段","ねだん","price"],["給料","きゅうりょう","salary"],
+    ["税金","ぜいきん","tax"],["貯金","ちょきん","savings"],["借金","しゃっきん","debt"],
+    ["契約","けいやく","contract"],["保険","ほけん","insurance"],["政治","せいじ","politics"],
+    ["経済","けいざい","economy"],["社会","しゃかい","society"],["文化","ぶんか","culture"],
+    ["伝統","でんとう","tradition"]
   ];
 
   // Cards that moved decks / shifted position in v11. Used once by
@@ -253,6 +288,20 @@
   var N5_VOCAB = withIds(N5_VOCAB_RAW, "v", "vocab", "n5");
   var N4_KANJI = withIds(N4_KANJI_RAW, "n4k", "kanji", "n4");
   var N4_VOCAB = withIds(N4_VOCAB_RAW, "n4v", "vocab", "n4");
+
+  // Attach onyomi/kunyomi/example-word detail (from kanji-info.js, keyed by
+  // the character itself) onto each kanji card. Cards without an entry just
+  // keep the plain combined `reading` field they already had.
+  (function attachKanjiInfo() {
+    var info = window.KanjiInfo || {};
+    N5_KANJI.concat(N4_KANJI).forEach(function (c) {
+      var i = info[c.front];
+      if (!i) return;
+      c.onyomi = i.onyomi;
+      c.kunyomi = i.kunyomi;
+      c.examples = i.examples;
+    });
+  })();
 
   // ---------- Auto-generated example sentences (vocab only) ----------
   var GREETING_WORDS = ["こんにちは","ありがとう","すみません","おはようございます","こんばんは","さようなら","はい","いいえ"];

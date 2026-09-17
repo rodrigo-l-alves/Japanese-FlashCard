@@ -1,8 +1,8 @@
-// App shell cache. v14 adds Write mode + Random inside rating groups, and blur/reveal for memory-mode writing.
-var CACHE_NAME = "n5-flashcards-v14";
+// App shell cache. v15 adds onyomi/kunyomi + example words to kanji cards.
+var CACHE_NAME = "n5-flashcards-v15";
 var ASSETS = [
-  "./", "./index.html", "./css/style.css?v=14", "./js/data.js?v=14", "./js/storage.js",
-  "./js/srs.js", "./js/audio.js", "./js/romanji.js", "./js/writing.js?v=14", "./js/app.js?v=14",
+  "./", "./index.html", "./css/style.css?v=15", "./js/kanji-info.js?v=15", "./js/data.js?v=15", "./js/storage.js",
+  "./js/srs.js", "./js/audio.js", "./js/romanji.js", "./js/writing.js?v=15", "./js/app.js?v=15",
   "./manifest.json", "./icons/icon-192.png", "./icons/icon-512.png"
 ];
 

@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#f6f0e7">
   <meta name="description" content="A calm, focused Japanese N5 and N4 flashcard study app.">
   <title>Japanese Flashcards · N5 / N4</title>
-  <link rel="stylesheet" href="css/style.css?v=14">
+  <link rel="stylesheet" href="css/style.css?v=16">
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="icons/icon-192.png">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
@@ -17,17 +17,18 @@
 <body>
   <div id="app-root"></div>
 
-  <script src="js/data.js?v=14"></script>
+  <script src="js/kanji-info.js?v=16"></script>
+  <script src="js/data.js?v=16"></script>
   <script src="js/storage.js"></script>
   <script src="js/srs.js"></script>
   <script src="js/audio.js"></script>
   <script src="js/romanji.js"></script>
-  <script src="js/writing.js?v=14"></script>
-  <script src="js/app.js?v=14"></script>
+  <script src="js/writing.js?v=16"></script>
+  <script src="js/app.js?v=16"></script>
   <script>
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", function () {
-        navigator.serviceWorker.register("sw.js?v=14").catch(function (err) {
+        navigator.serviceWorker.register("sw.js?v=15").catch(function (err) {
           console.error("SW registration failed:", err);
         });
       });

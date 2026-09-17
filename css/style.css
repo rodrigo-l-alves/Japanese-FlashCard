@@ -576,6 +576,94 @@ select:focus-visible,
   line-height: 1.65;
 }
 
+.kanji-detail-panel {
+  margin: 14px auto 0;
+  padding: 16px 20px;
+  max-width: 420px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--paper-raised);
+  box-shadow: 0 3px 10px rgba(55, 45, 34, 0.04);
+  text-align: left;
+}
+
+.kanji-reading-types {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 22px;
+}
+
+.kanji-reading-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.kanji-reading-label {
+  color: var(--ink-faint);
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.kanji-reading-value {
+  color: var(--indigo);
+  font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif;
+  font-size: 16px;
+  font-weight: 550;
+}
+
+.kanji-examples {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.kanji-examples-label {
+  margin-bottom: 8px;
+  color: var(--ink-faint);
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.kanji-examples-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  list-style: none;
+}
+
+.kanji-example-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 12px;
+}
+
+.kanji-example-word {
+  color: var(--ink);
+  font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif;
+  font-size: 16px;
+}
+
+.kanji-example-reading {
+  color: var(--ink-faint);
+  font-family: -apple-system, "Iowan Old Style", Georgia, serif;
+  font-size: 12px;
+  font-style: normal;
+}
+
+.kanji-example-meaning {
+  color: var(--ink-soft);
+  font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  font-size: 13px;
+  font-style: italic;
+}
+
 .audio-btn {
   position: relative;
   z-index: 2;

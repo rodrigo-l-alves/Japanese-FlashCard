@@ -1048,6 +1048,70 @@ select:focus-visible,
 
 .add-form > .check-btn { margin-top: 3px; }
 
+.form-subheading {
+  margin-top: 4px;
+  color: var(--ink-faint);
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.example-entry-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.example-entry-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 7px 10px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--paper-solid);
+}
+
+.example-entry-text {
+  color: var(--ink);
+  font-size: 12px;
+}
+
+.add-example-btn {
+  align-self: flex-start;
+  font-weight: 700;
+}
+
+/* ---------- Kanji example reading/romaji blur/eye toggle ---------- */
+.kanji-example-hidden {
+  display: inline-block;
+  border-radius: 4px;
+  transition: filter .15s ease, opacity .15s ease;
+}
+
+.kanji-example-hidden.blurred {
+  filter: blur(4px);
+  opacity: 0.85;
+  user-select: none;
+}
+
+.romaji-eye-btn {
+  margin-left: 6px;
+  padding: 1px 5px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  font-size: 11px;
+  line-height: 1;
+  cursor: pointer;
+  vertical-align: middle;
+  transition: background .14s ease;
+}
+
+.romaji-eye-btn:hover { background: var(--paper-raised); }
+
 .import-error {
   margin-top: 8px;
   padding: 9px 11px;

@@ -25,7 +25,13 @@
     // onyomi/kunyomi are plain text here (e.g. "ハチ" or "つめ-たい・ひ-える")
     // and only turned into arrays in submitAddForm, right before they're
     // saved onto a card -- see parseReadingList.
-    addForm: { level: "n5", deck: "vocab", front: "", reading: "", meaning: "", example: "", onyomi: "", kunyomi: "" }
+    addForm: {
+      level: "n5", deck: "vocab", front: "", reading: "", meaning: "", example: "", onyomi: "", kunyomi: "",
+      // Example words (kanji cards only) -- a list of {word, reading, romaji, meaning}
+      // built up one entry at a time via exWord/exReading/exRomaji/exMeaning below,
+      // mirroring the shape kanji-info.js already uses for built-in cards.
+      examples: [], exWord: "", exReading: "", exRomaji: "", exMeaning: ""
+    }
   };
 
   // Splits free-typed on'yomi/kun'yomi text (e.g. "ハチ、キュウ" or "つめ-たい・ひ-える")
@@ -257,6 +263,25 @@
     });
   }
 
+  function addExampleToForm() {
+    var f = state.addForm;
+    var word = f.exWord.trim(), reading = f.exReading.trim(), meaning = f.exMeaning.trim();
+    if (!word || !reading || !meaning) {
+      state.addFormError = "Example word needs at least a word, reading and meaning.";
+      render();
+      return;
+    }
+    f.examples.push({ word: word, reading: reading, romaji: f.exRomaji.trim(), meaning: meaning });
+    f.exWord = ""; f.exReading = ""; f.exRomaji = ""; f.exMeaning = "";
+    state.addFormError = "";
+    render();
+  }
+
+  function removeExampleFromForm(index) {
+    state.addForm.examples.splice(index, 1);
+    render();
+  }
+
   function submitAddForm() {
     var f = state.addForm;
     if (!f.front.trim() || !f.reading.trim() || !f.meaning.trim()) {
@@ -281,12 +306,16 @@
       var kunyomi = parseReadingList(f.kunyomi);
       if (onyomi.length) card.onyomi = onyomi;
       if (kunyomi.length) card.kunyomi = kunyomi;
+      if (f.examples.length) card.examples = f.examples.slice();
     }
 
     state.customCards.push(card);
     state.addFormError = "";
     persist();
-    state.addForm = { level: f.level, deck: f.deck, front: "", reading: "", meaning: "", example: "", onyomi: "", kunyomi: "" };
+    state.addForm = {
+      level: f.level, deck: f.deck, front: "", reading: "", meaning: "", example: "", onyomi: "", kunyomi: "",
+      examples: [], exWord: "", exReading: "", exRomaji: "", exMeaning: ""
+    };
     buildQueue();
     render();
   }
@@ -430,11 +459,33 @@
     if (rows.length) children.push(el("div", { class: "kanji-reading-types" }, rows));
 
     if (examples.length) {
+      // Romaji starts blurred so the kanji/reading can be practiced without
+      // peeking at the romanization -- tapping the eye toggles just that
+      // one romaji span, independently of every other example on the card.
       var items = examples.map(function (ex) {
+        var readingSpan = el("span", { class: "kanji-example-hidden blurred", text: ex.reading });
+        var romajiSpan = el("span", { class: "kanji-example-hidden blurred", text: ex.romaji });
+        var eyeBtn = el("button", {
+          class: "romaji-eye-btn", type: "button", title: "Show/hide reading",
+          onClick: function (e) {
+            e.stopPropagation();
+            var hidden = readingSpan.classList.toggle("blurred");
+            romajiSpan.classList.toggle("blurred", hidden);
+            eyeBtn.textContent = hidden ? "\ud83d\udc41" : "\ud83d\ude48";
+          },
+          text: "\ud83d\udc41"
+        });
         return el("li", { class: "kanji-example-item" }, [
           el("span", { class: "kanji-example-word" }, [
             document.createTextNode(ex.word + " "),
-            el("span", { class: "kanji-example-reading", text: "(" + ex.reading + " \u00b7 " + ex.romaji + ")" })
+            el("span", { class: "kanji-example-reading" }, [
+              document.createTextNode("("),
+              readingSpan,
+              document.createTextNode(" \u00b7 "),
+              romajiSpan,
+              document.createTextNode(")")
+            ]),
+            eyeBtn
           ]),
           el("span", { class: "kanji-example-meaning", text: ex.meaning })
         ]);
@@ -844,6 +895,44 @@
     }
     wrap.appendChild(field("Meaning (English)", "meaning"));
     wrap.appendChild(field("Example sentence (optional)", "example"));
+
+    // Example words -- same word/reading/romaji/meaning shape the built-in
+    // kanji cards get from kanji-info.js, shown later in the "Example words"
+    // panel under a revealed kanji card (see renderKanjiDetail).
+    if (f.deck === "kanji") {
+      wrap.appendChild(el("div", { class: "form-subheading", text: "Example words (optional)" }));
+
+      if (f.examples.length) {
+        var exRows = f.examples.map(function (ex, i) {
+          var label = ex.word + " (" + ex.reading + (ex.romaji ? " \u00b7 " + ex.romaji : "") + ") \u2014 " + ex.meaning;
+          return el("div", { class: "example-entry-row" }, [
+            el("span", { class: "example-entry-text", text: label }),
+            el("button", { class: "delete-btn", onClick: function () { removeExampleFromForm(i); }, text: "\u2715" })
+          ]);
+        });
+        wrap.appendChild(el("div", { class: "example-entry-list" }, exRows));
+      }
+
+      function exField(labelText, key, placeholder) {
+        return el("label", { class: "form-field" }, [
+          el("span", { text: labelText }),
+          el("input", {
+            type: "text", value: f[key], placeholder: placeholder || "",
+            onInput: function (e) { state.addForm[key] = e.target.value; }
+          })
+        ]);
+      }
+
+      wrap.appendChild(el("div", { class: "form-row" }, [
+        exField("Word", "exWord", "高い"),
+        exField("Reading", "exReading", "たかい")
+      ]));
+      wrap.appendChild(el("div", { class: "form-row" }, [
+        exField("Romaji (optional)", "exRomaji", "takai"),
+        exField("Meaning", "exMeaning", "high / expensive")
+      ]));
+      wrap.appendChild(el("button", { class: "link-btn add-example-btn", onClick: addExampleToForm, text: "+ Add example word" }));
+    }
 
     if (state.addFormError) wrap.appendChild(el("div", { class: "import-error", text: state.addFormError }));
     wrap.appendChild(el("button", { class: "check-btn", onClick: submitAddForm, text: "Add card" }));

@@ -1,13 +1,28 @@
 // ---------- DECK DATA ----------
 // Two levels (n5, n4), each with a kanji deck and a vocab deck.
-// N5 ids are unchanged from the original version ("k0", "v0", ...) so
-// existing saved progress keeps working. N4 cards use "n4k"/"n4v" ids.
+// Ids are content-based ("k_一", "v_ありがとう", "n4k_忙", "n4v_..."), so
+// they stay stable no matter where a word sits in its list -- adding,
+// removing or reordering entries never reassigns another card's id or its
+// saved progress. (Prior to v13 ids were positional, e.g. "k0"; see
+// LEGACY_ID_MAP_V13 further down for the one-time migration off that.)
 
 (function () {
+  // Ids used to be idPrefix + array-index ("k0", "n4v62", ...), which meant
+  // inserting or reordering a word anywhere but the very end of a raw list
+  // silently reassigned every id after it -- and with it, everyone's saved
+  // progress for those cards. Ids are now derived from the card's own text
+  // instead, so they stay put no matter how the lists are edited later.
+  // POSITIONAL_IDS records the old i-based id for each card *as the lists
+  // happen to be ordered right now*, purely so migrateIds (app.js) can carry
+  // existing progress over one last time -- see LEGACY_ID_MAP_V13 below.
+  var POSITIONAL_IDS = [];
+
   function withIds(rawList, idPrefix, deck, level) {
     return rawList.map(function (r, i) {
+      var id = idPrefix + "_" + r[0];
+      POSITIONAL_IDS.push([idPrefix + i, id]);
       return {
-        id: idPrefix + i,
+        id: id,
         deck: deck,
         level: level,
         front: r[0],
@@ -289,6 +304,13 @@
   var N4_KANJI = withIds(N4_KANJI_RAW, "n4k", "kanji", "n4");
   var N4_VOCAB = withIds(N4_VOCAB_RAW, "n4v", "vocab", "n4");
 
+  // v13: ids switched from positional ("k0", "n4v62", ...) to content-based
+  // ("k_一", "n4v_..."), which stay correct no matter how these lists get
+  // reordered or added to later. This map (built from POSITIONAL_IDS above)
+  // is only ever needed once, to carry existing progress over.
+  var LEGACY_ID_MAP_V13 = {};
+  POSITIONAL_IDS.forEach(function (pair) { LEGACY_ID_MAP_V13[pair[0]] = pair[1]; });
+
   // Attach onyomi/kunyomi/example-word detail (from kanji-info.js, keyed by
   // the character itself) onto each kanji card. Cards without an entry just
   // keep the plain combined `reading` field they already had.
@@ -337,6 +359,7 @@
     },
     BY_ID: BY_ID,
     LEGACY_ID_MAP: LEGACY_ID_MAP,
-    LEGACY_ID_MAP_V12: LEGACY_ID_MAP_V12
+    LEGACY_ID_MAP_V12: LEGACY_ID_MAP_V12,
+    LEGACY_ID_MAP_V13: LEGACY_ID_MAP_V13
   };
 })();

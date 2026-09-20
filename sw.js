@@ -1,9 +1,18 @@
-// App shell cache. v15 adds onyomi/kunyomi + example words to kanji cards.
-var CACHE_NAME = "n5-flashcards-v16";
+// App shell cache. v17 switches card ids from positional to content-based
+// (data.js) and adds the matching one-time migration step (app.js).
+//
+// IMPORTANT: this ASSETS list is the service worker's own copy of every
+// versioned <script>/<link> src in index.html. The two must always match
+// exactly (same files, same "?v=" query strings) -- if they drift, this
+// worker can go on serving a stale, differently-ordered data.js after
+// index.html has already moved on to a newer one, which is exactly what
+// caused ids (and saved progress) to scramble before. When you bump a
+// version query string in index.html, bump it here too, in the same edit.
+var CACHE_NAME = "n5-flashcards-v17";
 var ASSETS = [
-  "./", "./index.html", "./css/style.css?v=17", "./js/kanji-info.js?v=15", "./js/data.js?v=15", "./js/storage.js",
-  "./js/srs.js", "./js/audio.js", "./js/romanji.js", "./js/writing.js?v=15", "./js/app.js?v=18",
-  "./manifest.json", "./icons/icon-192.png", "./icons/icon-512.png"
+  "./", "./index.html", "./css/style.css?v=17", "./js/kanji-info.js?v=16", "./js/data.js?v=19", "./js/storage.js",
+  "./js/srs.js", "./js/audio.js", "./js/romanji.js", "./js/writing.js?v=16", "./js/app.js?v=19",
+  "./manifest.json", "./icons/icon-192.png", "./icons/icon-512.png", "./icons/icon-maskable-512.png"
 ];
 
 self.addEventListener("install", function (event) {

@@ -51,11 +51,14 @@
     document.documentElement.setAttribute("data-theme", state.theme);
   }
 
-  // Card ids are positional, so reorganising the decks shifts them. Each entry
-  // below is a one-time remap, applied in order and flagged once done.
+  // Historical one-time id remaps, applied in order and flagged once done.
+  // V11/V12 patched earlier positional-id shifts; V13 is the last one
+  // needed -- it moves everyone off positional ids ("k0") onto stable,
+  // content-based ids ("k_一") that don't shift when the word lists change.
   var ID_MIGRATIONS = [
     { flag: "idsMigratedV11", map: "LEGACY_ID_MAP" },
-    { flag: "idsMigratedV12", map: "LEGACY_ID_MAP_V12" }
+    { flag: "idsMigratedV12", map: "LEGACY_ID_MAP_V12" },
+    { flag: "idsMigratedV13", map: "LEGACY_ID_MAP_V13" }
   ];
 
   function migrateIds(data) {
@@ -1056,4 +1059,4 @@
   });
 
   loadState();
-})();
+})(); 

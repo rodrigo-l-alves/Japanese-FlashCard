@@ -1,4 +1,7 @@
 // App shell cache. v18 adds a Grammar deck (N5/N4) alongside Kanji/Vocab.
+// v22 adds obligation / permission / casual-form grammar to N5.
+// v21 adds more counters and shows kana after counter kanji.
+// v20 adds counters, question words and more N5 grammar (Vてから moves N4 -> N5).
 // v19 expands N5 vocab/grammar and moves 4 grammar cards N4 -> N5.
 //
 // IMPORTANT: this ASSETS list is the service worker's own copy of every
@@ -8,10 +11,10 @@
 // index.html has already moved on to a newer one, which is exactly what
 // caused ids (and saved progress) to scramble before. When you bump a
 // version query string in index.html, bump it here too, in the same edit.
-var CACHE_NAME = "n5-flashcards-v19";
+var CACHE_NAME = "n5-flashcards-v22";
 var ASSETS = [
-  "./", "./index.html", "./css/style.css?v=18", "./js/kanji-info.js?v=16", "./js/data.js?v=21", "./js/storage.js",
-  "./js/srs.js", "./js/audio.js", "./js/romanji.js", "./js/writing.js?v=16", "./js/app.js?v=21",
+  "./", "./index.html", "./css/style.css?v=18", "./js/kanji-info.js?v=16", "./js/data.js?v=24", "./js/storage.js",
+  "./js/srs.js", "./js/audio.js", "./js/romanji.js", "./js/writing.js?v=16", "./js/app.js?v=24",
   "./manifest.json", "./icons/icon-192.png", "./icons/icon-512.png", "./icons/icon-maskable-512.png"
 ];
 

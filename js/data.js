@@ -167,7 +167,27 @@
     ["八日","ようか","eight days / the 8th","八日に映画を見ます。(I'll watch a movie on the 8th.)"],
     ["九日","ここのか","nine days / the 9th","九日に試験があります。(There's an exam on the 9th.)"],
     ["十日","とおか","ten days / the 10th","十日、旅行します。(I'll travel for ten days.)"],
-    ["何日","なんにち","what day of the month / how many days","今日は何日ですか。(What's the date today?)"]
+    ["何日","なんにち","what day of the month / how many days","今日は何日ですか。(What's the date today?)"],
+    ["何","なに・なん","what","これは何ですか。(What is this?)"],
+    ["いつ","いつ","when","いつ日本へ行きますか。(When are you going to Japan?)"],
+    ["誰","だれ","who","誰が来ましたか。(Who came?)"],
+    ["いくら","いくら","how much (price)","これはいくらですか。(How much is this?)"],
+    ["どのくらい","どのくらい","how long / how much / how far","駅までどのくらいかかりますか。(How long does it take to get to the station?)"],
+    ["ね","ね","right? / isn't it? (seeking agreement)","今日は暑いですね。(It's hot today, isn't it?)"],
+    ["よ","よ","you know / I tell you (asserting new info)","この店はおいしいですよ。(This shop is good, I tell you.)"],
+    ["〜人（にん）","にん","counter for people (1 = ひとり, 2 = ふたり)","学生が三人います。(There are three students.)"],
+    ["〜枚（まい）","まい","counter for flat things (paper, tickets, plates)","切符を二枚買いました。(I bought two tickets.)"],
+    ["〜本（ほん）","ほん・ぼん・ぽん","counter for long thin things (pens, bottles, trains)","ペンを三本ください。(Three pens, please.)"],
+    ["〜個（こ）","こ","counter for small round things / general items","りんごを四個食べました。(I ate four apples.)"],
+    ["〜回（かい）","かい","counter for times / occurrences","週に二回、運動します。(I exercise twice a week.)"],
+    ["〜歳（さい）","さい","counter for age (20 years old = はたち)","私は十九歳です。(I am nineteen years old.)"],
+    ["〜冊（さつ）","さつ","counter for bound things (books, notebooks, magazines)","本を三冊借りました。(I borrowed three books.)"],
+    ["〜羽（わ）","わ・ば・ぱ","counter for birds and rabbits (三羽 さんば, 六羽 ろっぱ)","庭に鳥が二羽います。(There are two birds in the garden.)"],
+    ["〜匹（ひき）","ひき・びき・ぴき","counter for small animals and fish (三匹 さんびき, 一匹 いっぴき)","猫を一匹飼っています。(I have one cat.)"],
+    ["〜頭（とう）","とう","counter for large animals (cows, horses, elephants)","牧場に牛が五頭います。(There are five cows on the ranch.)"],
+    ["〜足（そく）","そく","counter for pairs of footwear / socks (三足 さんぞく)","靴を二足買いました。(I bought two pairs of shoes.)"],
+    ["〜台（だい）","だい","counter for machines and vehicles (cars, computers, TVs)","駐車場に車が三台あります。(There are three cars in the parking lot.)"],
+    ["〜杯（はい）","はい・ばい・ぱい","counter for cups / glassfuls of drink (三杯 さんばい, 一杯 いっぱい)","コーヒーを二杯飲みました。(I drank two cups of coffee.)"]
   ];
 
   // ---------- N4 ----------
@@ -399,19 +419,45 @@
     ["～でしょう？(確認)","plain form + でしょう (rising tone)","right? / isn't it? (seeking agreement)","明日は休みでしょう？(Tomorrow's a day off, right?)"],
     ["いいでしょう／いいでしょうか","いいでしょう(か)","that's fine / would that be all right?","この本を借りてもいいでしょうか。(Would it be all right if I borrowed this book?)"],
     ["～のです／んです","plain form + のです (な-adj/N + なのです)","it's that ~ (explaining, or asking for an explanation)","どうしたんですか。頭が痛いんです。(What's wrong? My head hurts, you see.)"],
-    ["～すぎ (時間・年齢)","time / age + すぎ","past ~ (o'clock) / over ~ (years old)","今、三時すぎです。(It's just past three.)"]
+    ["～すぎ (時間・年齢)","time / age + すぎ","past ~ (o'clock) / over ~ (years old)","今、三時すぎです。(It's just past three.)"],
+    ["Vてから","て-form + から","after doing ~, and then","手を洗ってから、ご飯を食べます。(I eat after washing my hands.)"],
+    ["Vないでください","ない-form + でください","please don't do ~","ここで写真を撮らないでください。(Please don't take photos here.)"],
+    ["Vたほうがいい","た-form + ほうがいい","you should do ~ (advice)","早く寝たほうがいいです。(You should go to bed early.)"],
+    ["Vないほうがいい","ない-form + ほうがいい","you shouldn't do ~ (advice)","夜遅く食べないほうがいいです。(You shouldn't eat late at night.)"],
+    ["Adj(い)＋くなります","い-adjective, drop い + くなります","become ~ (i-adjective)","だんだん寒くなります。(It's gradually getting cold.)"],
+    ["N／Adj(な)＋になります","N or な-adjective + になります","become ~ (noun / na-adjective)","来年、二十歳になります。(I'll turn twenty next year.)"],
+    ["Adj(い)＋くて","い-adjective, drop い + くて","and ~ / ~ and so (links adjectives)","この部屋は広くて明るいです。(This room is spacious and bright.)"],
+    ["Adj(な)＋で","な-adjective + で","and ~ (links adjectives / nouns)","この町は静かできれいです。(This town is quiet and pretty.)"],
+    ["～と思います","plain form + と思います","I think that ~","明日は雨が降ると思います。(I think it will rain tomorrow.)"],
+    ["～と言いました","plain form + と言いました","said that ~ (indirect quote)","先生は明日テストがあると言いました。(The teacher said there will be a test tomorrow.)"],
+    ["Nが好き／上手です","N + が + 好き／きらい／上手／下手","like / dislike / good at / bad at ~ (these take が)","弟は料理が上手です。(My little brother is good at cooking.)"],
+    ["Vたことがない","た-form + ことがない","have never done ~","刺身を食べたことがありません。(I've never eaten sashimi.)"],
+    ["Vるな","dictionary form + な","don't ~! (blunt negative command)","動くな！(Don't move!)"],
+    ["～なあ","plain form / adjective / ～たい + なあ","expresses a feeling, wish or musing (casual, often to oneself)","早く日本へ行きたいなあ。(I really want to go to Japan soon...)"],
+    ["Vないで","ない-form + で (う-verbs: う→わ, e.g. 笑う→笑わないで)","please don't ~ (casual) / without doing ~","笑わないで。朝ご飯を食べないで来ました。(Don't laugh. I came without eating breakfast.)"],
+    ["Vないといけない","ない-form + といけない","must do ~ / have to do ~ (casual)","もう帰らないといけない。(I have to go home now.)"],
+    ["Vなくてはいけない","ない-form, drop い + くてはいけない","must do ~ (a bit more formal)","毎日、薬を飲まなくてはいけません。(I must take medicine every day.)"],
+    ["Vなくちゃいけない","ない-form, drop い + くちゃいけない","must do ~ (casual contraction of なくてはいけない)","早く起きなくちゃいけない。(I have to get up early.)"],
+    ["Vなくてはならない","ない-form, drop い + くてはならない","must do ~ (stronger, duty / rule)","税金を払わなくてはなりません。(You must pay taxes.)"],
+    ["Vなくちゃ","ない-form, drop い + くちゃ","gotta ~ / have to ~ (casual, ending left off)","もう行かなくちゃ。(I've gotta go now.)"],
+    ["Vなくてもいいです","ない-form, drop い + なくてもいいです","don't have to do ~","今日は残業しなくてもいいです。(I don't have to work overtime today.)"],
+    ["Vなくてもいい","ない-form, drop い + くてもいい","don't have to do ~ (plain form)","今日は来なくてもいい。(You don't have to come today.)"],
+    ["N／Adj(な)＋になる","N or な-adjective + になる","become ~ (plain form)","彼は医者になる。(He will become a doctor.)"],
+    ["Vてある","transitive verb て-form + ある","has been done ~ (state left by someone's deliberate action)","窓が開けてあります。(The window has been opened [and left that way].)"],
+    ["Vている／Vてる","て-form + いる (casual: てる)","doing ~ / in a state of ~ (plain form)","彼は今、本を読んでいる。(He is reading a book right now.)"],
+    ["Vてはいけない","て-form + はいけない","must not do ~ (plain form)","ここで走ってはいけない。(You must not run here.)"],
+    ["Vてもいい","て-form + もいい","it's okay to do ~ (plain form)","この席に座ってもいい。(You may sit in this seat.)"],
+    ["Vていい","て-form + いい (も dropped)","it's okay to do ~ (casual)","先に帰っていいよ。(You can go home first.)"]
   ];
 
   // ---------- N4 grammar ----------
   var N4_GRAMMAR_RAW = [
     ["～のに","plain form + のに","even though ~ / despite ~","一生懸命勉強したのに、試験に落ちました。(Even though I studied hard, I failed the exam.)"],
-    ["Vてから","て-form + から","after doing ~, and then","手を洗ってから、ご飯を食べます。(I eat after washing my hands.)"],
     ["Vたら","た-form + ら","if/when ~ (conditional)","雨が降ったら、行きません。(If it rains, I won't go.)"],
     ["Vば","conditional (え-stem) + ば","if ~ (conditional, focuses on the condition itself)","安ければ、買います。(If it's cheap, I'll buy it.)"],
     ["Vと","dictionary form + と","if/when ~ (leads naturally/always to the result)","春になると、桜が咲きます。(When spring comes, the cherry blossoms bloom.)"],
     ["～なら","plain form + なら","if it's the case that ~ / if you mean ~","日本へ行くなら、パスポートが要ります。(If you're going to Japan, you'll need a passport.)"],
     ["Vなければなりません","ない-form, drop い + なければなりません","must do ~ / have to do ~","明日までにレポートを出さなければなりません。(I have to submit the report by tomorrow.)"],
-    ["Vなくてもいいです","ない-form, drop い + なくてもいいです","don't have to do ~","今日は残業しなくてもいいです。(I don't have to work overtime today.)"],
     ["Vやすいです","verb stem + やすいです","easy to do ~","この本は読みやすいです。(This book is easy to read.)"],
     ["Vにくいです","verb stem + にくいです","hard to do ~","この漢字は書きにくいです。(This kanji is hard to write.)"],
     ["～そうです (様態)","verb stem／adjective stem + そうです","looks like ~ / seems ~ (based on appearance)","このケーキはおいしそうです。(This cake looks delicious.)"],
@@ -468,6 +514,23 @@
     "n4g_Vすぎます": "g_Vすぎます",
     "n4g_Vつもりです": "g_Vつもりです",
     "n4g_～がります": "g_～がります"
+  };
+
+  // v20: Vてから moved from N4 to N5 (level prefix is part of the id).
+  var LEGACY_ID_MAP_V20 = {
+    "n4g_Vてから": "g_Vてから"
+  };
+
+  // v21: counters renamed to show the kana after the kanji, e.g. "〜人" ->
+  // "〜人（にん）". Carries saved progress onto the new ids, once.
+  var LEGACY_ID_MAP_V21 = {
+    "v_〜人": "v_〜人（にん）", "v_〜枚": "v_〜枚（まい）", "v_〜本": "v_〜本（ほん）",
+    "v_〜個": "v_〜個（こ）", "v_〜回": "v_〜回（かい）", "v_〜歳": "v_〜歳（さい）"
+  };
+
+  // v22: Vなくてもいいです moved from N4 to N5 (level prefix is in the id).
+  var LEGACY_ID_MAP_V22 = {
+    "n4g_Vなくてもいいです": "g_Vなくてもいいです"
   };
 
   var N5_KANJI = withIds(N5_KANJI_RAW, "k", "kanji", "n5");
@@ -536,6 +599,9 @@
     LEGACY_ID_MAP: LEGACY_ID_MAP,
     LEGACY_ID_MAP_V12: LEGACY_ID_MAP_V12,
     LEGACY_ID_MAP_V13: LEGACY_ID_MAP_V13,
-    LEGACY_ID_MAP_V19: LEGACY_ID_MAP_V19
+    LEGACY_ID_MAP_V19: LEGACY_ID_MAP_V19,
+    LEGACY_ID_MAP_V20: LEGACY_ID_MAP_V20,
+    LEGACY_ID_MAP_V21: LEGACY_ID_MAP_V21,
+    LEGACY_ID_MAP_V22: LEGACY_ID_MAP_V22
   };
 })();

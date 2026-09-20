@@ -59,7 +59,10 @@
     { flag: "idsMigratedV11", map: "LEGACY_ID_MAP" },
     { flag: "idsMigratedV12", map: "LEGACY_ID_MAP_V12" },
     { flag: "idsMigratedV13", map: "LEGACY_ID_MAP_V13" },
-    { flag: "idsMigratedV19", map: "LEGACY_ID_MAP_V19" }
+    { flag: "idsMigratedV19", map: "LEGACY_ID_MAP_V19" },
+    { flag: "idsMigratedV20", map: "LEGACY_ID_MAP_V20" },
+    { flag: "idsMigratedV21", map: "LEGACY_ID_MAP_V21" },
+    { flag: "idsMigratedV22", map: "LEGACY_ID_MAP_V22" }
   ];
 
   function migrateIds(data) {
@@ -434,7 +437,14 @@
     // Grammar cards' `reading` field holds a formation note (often mixed
     // English/Japanese), not a kana reading -- speak the pattern itself
     // instead. Everything else speaks its reading, as before.
-    var toSpeak = card.deck === "grammar" ? card.front : card.reading;
+    var toSpeak;
+    if (card.deck === "grammar") {
+      // Speak the Japanese part of the example sentence (before the English
+      // "(...)" gloss); the front is a pattern like "N + が" that TTS garbles.
+      toSpeak = (card.example || card.front).split("(")[0].replace(/[～]/g, "");
+    } else {
+      toSpeak = card.reading;
+    }
     return el("button", {
       class: "audio-btn",
       onClick: function (e) { e.stopPropagation(); window.Speech.speak(toSpeak.split("\u30fb")[0]); },

@@ -24,14 +24,58 @@
     "da":"だ","di":"ぢ","du":"づ","de":"で","do":"ど",
     "ba":"ば","bi":"び","bu":"ぶ","be":"べ","bo":"ぼ",
     "pa":"ぱ","pi":"ぴ","pu":"ぷ","pe":"ぺ","po":"ぽ",
-    "a":"あ","i":"い","u":"う","e":"え","o":"お"
+    "a":"あ","i":"い","u":"う","e":"え","o":"お",
+    // kunrei / alternate spellings
+    "si":"し","ti":"ち","tu":"つ","hu":"ふ","zi":"じ",
+    "sya":"しゃ","syu":"しゅ","syo":"しょ","tya":"ちゃ","tyu":"ちゅ","tyo":"ちょ",
+    "zya":"じゃ","zyu":"じゅ","zyo":"じょ","jya":"じゃ","jyu":"じゅ","jyo":"じょ",
+    "cya":"ちゃ","cyu":"ちゅ","cyo":"ちょ",
+    "dya":"ぢゃ","dyu":"ぢゅ","dyo":"ぢょ",
+    // sounds found in katakana loanwords
+    "fa":"ふぁ","fi":"ふぃ","fe":"ふぇ","fo":"ふぉ",
+    "she":"しぇ","che":"ちぇ","je":"じぇ",
+    "thi":"てぃ","dhi":"でぃ","wi":"うぃ","we":"うぇ","wo":"を"
   };
 
+  // Vowel row of each hiragana, used to expand the long-vowel mark ー
+  // (サッカー -> さっかあ) so katakana readings and typed romaji line up.
+  var VOWEL_OF = {};
+  [["あ","あかがさざただなはばぱまやらわゃぁ"],
+   ["い","いきぎしじちぢにひびぴみりぃ"],
+   ["う","うくぐすずつづぬふぶぷむゆるゅぅ"],
+   ["え","えけげせぜてでねへべぺめれぇ"],
+   ["お","おこごそぞとどのほぼぽもよろをょぉ"]].forEach(function (row) {
+    row[1].split("").forEach(function (ch) { VOWEL_OF[ch] = row[0]; });
+  });
+
+  function expandLongVowel(s) {
+    var out = "";
+    for (var i = 0; i < s.length; i++) {
+      var ch = s.charAt(i);
+      if (ch === "ー" && out.length && VOWEL_OF[out.charAt(out.length - 1)]) {
+        out += VOWEL_OF[out.charAt(out.length - 1)];
+      } else {
+        out += ch;
+      }
+    }
+    return out;
+  }
+
   function toHiragana(input) {
-    var s = input.toLowerCase().replace(/[^a-z]/g, "");
+    var s = input.toLowerCase()
+      .replace(/ā/g, "aa").replace(/ī/g, "ii").replace(/ū/g, "uu")
+      .replace(/ē/g, "ee").replace(/ō/g, "oo")
+      .replace(/[^a-z\-]/g, "");
     var out = "";
     var i = 0;
     while (i < s.length) {
+      if (s[i] === "-") { out += "ー"; i += 1; continue; }
+      // "tch" (matcha) -> small tsu + ち...
+      if (s[i] === "t" && s[i + 1] === "c" && s[i + 2] === "h") {
+        out += "っ";
+        i += 1;
+        continue;
+      }
       // doubled consonant -> small tsu (e.g. "kitte" -> "きって")
       if (s[i] === s[i + 1] && "bcdfghjklmpqrstvwxyz".indexOf(s[i]) !== -1) {
         out += "っ";
@@ -56,15 +100,16 @@
       }
       if (!matched) i += 1; // unknown character, skip it
     }
-    return out;
+    return expandLongVowel(out);
   }
 
   function normalizeKana(s) {
-    return s.split("").map(function (ch) {
+    var hira = s.split("").map(function (ch) {
       var code = ch.charCodeAt(0);
       if (code >= 0x30A1 && code <= 0x30F6) return String.fromCharCode(code - 0x60); // katakana -> hiragana
       return ch;
     }).join("").trim();
+    return expandLongVowel(hira);
   }
 
   function looksLikeKana(s) {

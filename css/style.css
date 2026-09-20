@@ -552,6 +552,17 @@ select:focus-visible,
   line-height: 1.25;
 }
 
+/* Grammar cards store a formation note here instead of a kana reading
+   (e.g. "Verb て-form + ください") -- often mixed English/Japanese, so it
+   reads better in the app's plain sans font at a smaller size than a
+   short kana reading needs. */
+.reading.formation {
+  font-family: "Avenir Next", "Segoe UI", Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: clamp(16px, 3.2vw, 20px);
+  font-weight: 650;
+  line-height: 1.4;
+}
+
 .meaning {
   position: relative;
   z-index: 1;

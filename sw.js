@@ -1,5 +1,5 @@
-// App shell cache. v17 switches card ids from positional to content-based
-// (data.js) and adds the matching one-time migration step (app.js).
+// App shell cache. v18 adds a Grammar deck (N5/N4) alongside Kanji/Vocab.
+// v19 expands N5 vocab/grammar and moves 4 grammar cards N4 -> N5.
 //
 // IMPORTANT: this ASSETS list is the service worker's own copy of every
 // versioned <script>/<link> src in index.html. The two must always match
@@ -8,10 +8,10 @@
 // index.html has already moved on to a newer one, which is exactly what
 // caused ids (and saved progress) to scramble before. When you bump a
 // version query string in index.html, bump it here too, in the same edit.
-var CACHE_NAME = "n5-flashcards-v17";
+var CACHE_NAME = "n5-flashcards-v19";
 var ASSETS = [
-  "./", "./index.html", "./css/style.css?v=17", "./js/kanji-info.js?v=16", "./js/data.js?v=19", "./js/storage.js",
-  "./js/srs.js", "./js/audio.js", "./js/romanji.js", "./js/writing.js?v=16", "./js/app.js?v=19",
+  "./", "./index.html", "./css/style.css?v=18", "./js/kanji-info.js?v=16", "./js/data.js?v=21", "./js/storage.js",
+  "./js/srs.js", "./js/audio.js", "./js/romanji.js", "./js/writing.js?v=16", "./js/app.js?v=21",
   "./manifest.json", "./icons/icon-192.png", "./icons/icon-512.png", "./icons/icon-maskable-512.png"
 ];
 

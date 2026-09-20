@@ -1,10 +1,11 @@
 // ---------- DECK DATA ----------
-// Two levels (n5, n4), each with a kanji deck and a vocab deck.
-// Ids are content-based ("k_一", "v_ありがとう", "n4k_忙", "n4v_..."), so
-// they stay stable no matter where a word sits in its list -- adding,
-// removing or reordering entries never reassigns another card's id or its
-// saved progress. (Prior to v13 ids were positional, e.g. "k0"; see
-// LEGACY_ID_MAP_V13 further down for the one-time migration off that.)
+// Two levels (n5, n4), each with a kanji deck, a vocab deck, and a grammar
+// deck. Ids are content-based ("k_一", "v_ありがとう", "n4k_忙", "g_Nです",
+// ...), so they stay stable no matter where a word sits in its list --
+// adding, removing or reordering entries never reassigns another card's id
+// or its saved progress. (Prior to v13 kanji/vocab ids were positional,
+// e.g. "k0"; see LEGACY_ID_MAP_V13 further down for the one-time migration
+// off that. Grammar cards are new since then and never had positional ids.)
 
 (function () {
   // Ids used to be idPrefix + array-index ("k0", "n4v62", ...), which meant
@@ -133,7 +134,40 @@
     ["話す","はなす","to speak"],["書く","かく","to write"],["読む","よむ","to read"],
     ["分かる","わかる","to understand"],["寝る","ねる","to sleep"],["起きる","おきる","to get up"],
     ["座る","すわる","to sit"],["立つ","たつ","to stand"],["入る","はいる","to enter"],
-    ["出る","でる","to exit / leave"]
+    ["出る","でる","to exit / leave"],
+    ["でも","でも","but / however","疲れました。でも、頑張ります。(I'm tired. But I'll do my best.)"],
+    ["けど","けど","but (casual)","高いけど、買いました。(It was expensive, but I bought it.)"],
+    ["けれど","けれど","but (a bit more formal than けど)","寒いけれど、散歩に行きます。(It's cold, but I'm going for a walk.)"],
+    ["けれども","けれども","but / although (more formal still)","日本語は難しいけれども、面白いです。(Japanese is difficult, but it's interesting.)"],
+    ["しかし","しかし","however (written / formal)","この店は安いです。しかし、おいしくないです。(This shop is cheap. However, it isn't tasty.)"],
+    ["だから","だから","so / therefore","雨です。だから、家にいます。(It's raining. So I'm staying home.)"],
+    ["それから","それから","and then / after that","朝ご飯を食べます。それから、学校へ行きます。(I eat breakfast. After that, I go to school.)"],
+    ["そして","そして","and / and then","彼は優しいです。そして、頭がいいです。(He's kind. And he's smart.)"],
+    ["どんな","どんな","what kind of","どんな音楽が好きですか。(What kind of music do you like?)"],
+    ["どうして","どうして","why","どうして日本語を勉強しますか。(Why do you study Japanese?)"],
+    ["どうやって","どうやって","how / by what means","駅までどうやって行きますか。(How do you get to the station?)"],
+    ["できるだけ","できるだけ","as much as possible","できるだけ早く来てください。(Please come as early as possible.)"],
+    ["一つ","ひとつ","one (thing)","りんごを一つください。(One apple, please.)"],
+    ["二つ","ふたつ","two (things)","りんごを二つください。(Two apples, please.)"],
+    ["三つ","みっつ","three (things)","りんごを三つください。(Three apples, please.)"],
+    ["四つ","よっつ","four (things)","りんごを四つ買いました。(I bought four apples.)"],
+    ["五つ","いつつ","five (things)","みかんを五つ食べました。(I ate five mandarin oranges.)"],
+    ["六つ","むっつ","six (things)","卵が六つあります。(There are six eggs.)"],
+    ["七つ","ななつ","seven (things)","椅子が七つあります。(There are seven chairs.)"],
+    ["八つ","やっつ","eight (things)","ケーキを八つ作りました。(I made eight cakes.)"],
+    ["九つ","ここのつ","nine (things)","かばんの中にりんごが九つあります。(There are nine apples in the bag.)"],
+    ["とお","とお","ten (things)","クッキーが全部でとおあります。(There are ten cookies in total.)"],
+    ["一日","いちにち・ついたち","one day / the 1st of the month","今日は一日中、雨でした。(It rained all day today.)"],
+    ["二日","ふつか","two days / the 2nd","二日間、休みます。(I'll take two days off.)"],
+    ["三日","みっか","three days / the 3rd","三日前に日本へ来ました。(I came to Japan three days ago.)"],
+    ["四日","よっか","four days / the 4th","四日に会いましょう。(Let's meet on the 4th.)"],
+    ["五日","いつか","five days / the 5th","五日は友達の誕生日です。(The 5th is my friend's birthday.)"],
+    ["六日","むいか","six days / the 6th","六日までに返してください。(Please return it by the 6th.)"],
+    ["七日","なのか","seven days / the 7th","七日は日曜日です。(The 7th is a Sunday.)"],
+    ["八日","ようか","eight days / the 8th","八日に映画を見ます。(I'll watch a movie on the 8th.)"],
+    ["九日","ここのか","nine days / the 9th","九日に試験があります。(There's an exam on the 9th.)"],
+    ["十日","とおか","ten days / the 10th","十日、旅行します。(I'll travel for ten days.)"],
+    ["何日","なんにち","what day of the month / how many days","今日は何日ですか。(What's the date today?)"]
   ];
 
   // ---------- N4 ----------
@@ -291,6 +325,134 @@
     ["伝統","でんとう","tradition"]
   ];
 
+  // ---------- N5 grammar ----------
+  // Each entry: [pattern, formation note, meaning, example sentence].
+  // "formation" replaces the kana `reading` field for this deck -- see
+  // withIds; it's shown in the same spot on the card.
+  var N5_GRAMMAR_RAW = [
+    ["Nです","N + です","N is ~ (polite copula)","これは本です。(This is a book.)"],
+    ["Nじゃないです","N + じゃないです／ではありません","N is not ~ (polite negative copula)","これは私の傘じゃないです。(This isn't my umbrella.)"],
+    ["Nでした","N + でした","N was ~ (polite past copula)","昨日は休みでした。(Yesterday was a day off.)"],
+    ["Nじゃなかったです","N + じゃなかったです／ではありませんでした","N was not ~ (polite past negative copula)","テストは簡単じゃなかったです。(The test wasn't easy.)"],
+    ["Nは","N + は","marks the sentence topic","私は学生です。(As for me, I'm a student.)"],
+    ["Nが","N + が","marks the grammatical subject","雨が降っています。(Rain is falling.)"],
+    ["Nも","N + も","also / too","私も行きます。(I'll go too.)"],
+    ["Nの","N + の + N","possessive, and links two nouns","これは友達の本です。(This is my friend's book.)"],
+    ["Nを","N + を","marks the direct object","パンを食べます。(I eat bread.)"],
+    ["Nに (時間)","time N + に","at/on (a specific point in time)","七時に起きます。(I get up at seven.)"],
+    ["Nに (行き先)","place N + に","to (a destination)","学校に行きます。(I go to school.)"],
+    ["Nで (場所)","place N + で","at/in (where an action happens)","図書館で勉強します。(I study at the library.)"],
+    ["Nで (手段)","means N + で","by/with (a tool or method)","バスで来ました。(I came by bus.)"],
+    ["Nへ","place N + へ","toward (a direction)","駅へ行きます。(I'm heading toward the station.)"],
+    ["NとN","N + と + N","and, with (people/things, exhaustive)","友達と映画を見ました。(I watched a movie with a friend.)"],
+    ["NやN","N + や + N","and, among other things (partial list)","机の上にペンや本があります。(There's a pen, a book, and other things on the desk.)"],
+    ["文＋か","sentence + か","turns a statement into a question","これは何ですか。(What is this?)"],
+    ["Nから～Nまで","N + から～N + まで","from ~ to ~","九時から五時まで働きます。(I work from 9 to 5.)"],
+    ["これ・それ・あれ・どれ","(pronoun, no noun follows)","this/that/that-over-there/which one","それは私のかばんです。(That is my bag.)"],
+    ["この・その・あの・どの＋N","この/その/あの/どの + N","this/that/that/which + noun","この本は面白いです。(This book is interesting.)"],
+    ["ここ・そこ・あそこ・どこ","(place pronoun)","here/there/over there/where","トイレはあそこです。(The toilet is over there.)"],
+    ["Vます","verb stem + ます","polite non-past / future verb","毎日日本語を勉強します。(I study Japanese every day.)"],
+    ["Vません","verb stem + ません","polite non-past negative verb","肉を食べません。(I don't eat meat.)"],
+    ["Vました","verb stem + ました","polite past verb","昨日映画を見ました。(I watched a movie yesterday.)"],
+    ["Vませんでした","verb stem + ませんでした","polite past negative verb","今朝、朝ご飯を食べませんでした。(I didn't eat breakfast this morning.)"],
+    ["Vませんか","verb stem + ませんか","won't you...? (invitation)","一緒に行きませんか。(Won't you come with me?)"],
+    ["Vましょう","verb stem + ましょう","let's ~","少し休みましょう。(Let's rest a little.)"],
+    ["Vたいです","verb stem + たいです","want to do ~","日本へ行きたいです。(I want to go to Japan.)"],
+    ["Vながら","verb stem + ながら","while doing ~ (two actions at once)","音楽を聞きながら勉強します。(I study while listening to music.)"],
+    ["Vてください","verb て-form + ください","please do ~","ここに名前を書いてください。(Please write your name here.)"],
+    ["Vています","verb て-form + います","doing ~ (in progress), or a resulting state","今、雨が降っています。(It's raining right now.)"],
+    ["Vてもいいです","verb て-form + もいいです","it's okay to do ~ / may I ~?","ここに座ってもいいですか。(Is it okay if I sit here?)"],
+    ["Vてはいけません","verb て-form + はいけません","must not do ~","ここでたばこを吸ってはいけません。(You mustn't smoke here.)"],
+    ["Adj(い)＋です","い-adjective + です","is ~ (i-adjective, plain register kept polite by です)","この店は安いです。(This shop is cheap.)"],
+    ["Adj(な)＋です","な-adjective + です","is ~ (na-adjective + です)","この町は静かです。(This town is quiet.)"],
+    ["Adj(い)＋くないです","い-adjective, drop い + くないです","is not ~ (i-adjective negative)","今日は暑くないです。(It's not hot today.)"],
+    ["Adj(な)＋じゃないです","な-adjective + じゃないです","is not ~ (na-adjective negative)","この問題は簡単じゃないです。(This problem isn't easy.)"],
+    ["Adj(い)＋かったです","い-adjective, drop い + かったです","was ~ (i-adjective past)","映画は楽しかったです。(The movie was fun.)"],
+    ["Adj(な)＋でした","な-adjective + でした","was ~ (na-adjective past)","子供のころ、元気でした。(I was energetic as a kid.)"],
+    ["AのほうがBより","A + のほうが + B + より","A is more ~ than B","電車のほうがバスより速いです。(The train is faster than the bus.)"],
+    ["AとBとどちらが","A + と + B + と、どちらが～","which is more, A or B?","犬と猫と、どちらが好きですか。(Which do you like more, dogs or cats?)"],
+    ["Nが一番～","N + が一番 + adjective","N is the most ~ (superlative)","日本語の中で漢字が一番難しいです。(Among Japanese, kanji is the hardest.)"],
+    ["Vことができます","dictionary form + ことができます","can do ~ (ability)","漢字を読むことができます。(I can read kanji.)"],
+    ["Vまえに","dictionary form + まえに","before doing ~","寝るまえに歯を磨きます。(I brush my teeth before sleeping.)"],
+    ["Vたあとで","た-form + あとで","after doing ~","宿題をしたあとでテレビを見ます。(I watch TV after doing homework.)"],
+    ["Vとき／Adjとき／Nのとき","plain form + とき","when ~ / at the time of ~","日本へ行くとき、パスポートが要ります。(When I go to Japan, I need a passport.)"],
+    ["～から (理由)","reason + から","because ~ (plain, everyday reason)","寒いから、コートを着ます。(Because it's cold, I'll wear a coat.)"],
+    ["～でしょう","plain form + でしょう","probably ~ / I think ~","明日は晴れでしょう。(It will probably be sunny tomorrow.)"],
+    ["Vたり Vたりします","た-form + り、た-form + り + します","do things like ~ and ~ (partial list of actions)","休みの日は本を読んだり、音楽を聞いたりします。(On days off, I do things like read and listen to music.)"],
+    ["Nがあります／います","inanimate N + があります、animate N + がいます","there is/are ~ (existence)","机の上に本があります。庭に猫がいます。(There's a book on the desk. There's a cat in the garden.)"],
+    ["Nをください","N + をください","please give me ~","水をください。(Please give me some water.)"],
+    ["～ので","plain form + ので","because ~ (softer, more objective than から)","雨が降っているので、傘を持って行きます。(Since it's raining, I'll take an umbrella.)"],
+    ["Vすぎます","verb stem／い・な-adjective stem + すぎます","do ~ too much / too ~","昨日、食べすぎました。(I ate too much yesterday.)"],
+    ["Vつもりです","dictionary form + つもりです","intend to do ~ / plan to ~","来年、留学するつもりです。(I intend to study abroad next year.)"],
+    ["～がります","adjective stem + がります","shows signs of feeling ~ (used for a third person)","妹は新しいゲームを欲しがっています。(My little sister seems to want the new game.)"],
+    ["Nがある","inanimate N + がある","there is ~ (plain / casual form)","あそこに郵便局がある。(There's a post office over there.)"],
+    ["Nがいる","animate N + がいる","there is ~ (people/animals; plain / casual form)","公園に子供がいる。(There are children in the park.)"],
+    ["Nがほしいです","N + がほしいです","I want ~ (a thing)","新しいかばんがほしいです。(I want a new bag.)"],
+    ["Nはどうですか","N + はどうですか","how about ~? / how is ~?","コーヒーはどうですか。(How about some coffee?)"],
+    ["Nだけ","N + だけ","only ~ / just ~","水だけ飲みます。(I drink only water.)"],
+    ["一人だけ","一人 + だけ","only one person / just by oneself","パーティーには一人だけ来ました。(Only one person came to the party.)"],
+    ["Nまで (until)","time N / verb dictionary form + まで","until ~ / up to ~","五時まで待ちます。(I'll wait until five.)"],
+    ["Nのまえに","N + のまえに","before ~ (a noun)","食事のまえに手を洗います。(I wash my hands before the meal.)"],
+    ["Vましょうか","verb stem + ましょうか","shall I ~? / shall we ~?","窓を開けましょうか。(Shall I open the window?)"],
+    ["Vたことがある","た-form + ことがある","have done ~ before (experience)","富士山に登ったことがあります。(I have climbed Mt. Fuji.)"],
+    ["～だろう","plain form + だろう","probably ~ (plain / casual version of でしょう)","明日は雨が降るだろう。(It will probably rain tomorrow.)"],
+    ["～でしょう？(確認)","plain form + でしょう (rising tone)","right? / isn't it? (seeking agreement)","明日は休みでしょう？(Tomorrow's a day off, right?)"],
+    ["いいでしょう／いいでしょうか","いいでしょう(か)","that's fine / would that be all right?","この本を借りてもいいでしょうか。(Would it be all right if I borrowed this book?)"],
+    ["～のです／んです","plain form + のです (な-adj/N + なのです)","it's that ~ (explaining, or asking for an explanation)","どうしたんですか。頭が痛いんです。(What's wrong? My head hurts, you see.)"],
+    ["～すぎ (時間・年齢)","time / age + すぎ","past ~ (o'clock) / over ~ (years old)","今、三時すぎです。(It's just past three.)"]
+  ];
+
+  // ---------- N4 grammar ----------
+  var N4_GRAMMAR_RAW = [
+    ["～のに","plain form + のに","even though ~ / despite ~","一生懸命勉強したのに、試験に落ちました。(Even though I studied hard, I failed the exam.)"],
+    ["Vてから","て-form + から","after doing ~, and then","手を洗ってから、ご飯を食べます。(I eat after washing my hands.)"],
+    ["Vたら","た-form + ら","if/when ~ (conditional)","雨が降ったら、行きません。(If it rains, I won't go.)"],
+    ["Vば","conditional (え-stem) + ば","if ~ (conditional, focuses on the condition itself)","安ければ、買います。(If it's cheap, I'll buy it.)"],
+    ["Vと","dictionary form + と","if/when ~ (leads naturally/always to the result)","春になると、桜が咲きます。(When spring comes, the cherry blossoms bloom.)"],
+    ["～なら","plain form + なら","if it's the case that ~ / if you mean ~","日本へ行くなら、パスポートが要ります。(If you're going to Japan, you'll need a passport.)"],
+    ["Vなければなりません","ない-form, drop い + なければなりません","must do ~ / have to do ~","明日までにレポートを出さなければなりません。(I have to submit the report by tomorrow.)"],
+    ["Vなくてもいいです","ない-form, drop い + なくてもいいです","don't have to do ~","今日は残業しなくてもいいです。(I don't have to work overtime today.)"],
+    ["Vやすいです","verb stem + やすいです","easy to do ~","この本は読みやすいです。(This book is easy to read.)"],
+    ["Vにくいです","verb stem + にくいです","hard to do ~","この漢字は書きにくいです。(This kanji is hard to write.)"],
+    ["～そうです (様態)","verb stem／adjective stem + そうです","looks like ~ / seems ~ (based on appearance)","このケーキはおいしそうです。(This cake looks delicious.)"],
+    ["～そうです (伝聞)","plain form + そうです","I heard that ~ (hearsay)","天気予報によると、明日は雨だそうです。(According to the forecast, I heard it'll rain tomorrow.)"],
+    ["～ようです","plain form + ようです","it seems that ~ / looks like ~ (inference from evidence)","誰もいないようです。(It seems no one is here.)"],
+    ["～みたいです","plain form + みたいです","seems like ~ (casual version of ようです)","彼は忙しいみたいです。(He seems busy.)"],
+    ["～らしいです","plain form + らしいです","apparently ~ / I heard ~ (based on outside information)","田中さんは来月結婚するらしいです。(Apparently Tanaka is getting married next month.)"],
+    ["受身形 (れる／られる)","verb + れる／られる","passive voice: to be done to","財布を盗まれました。(My wallet was stolen.)"],
+    ["使役形 (せる／させる)","verb + せる／させる","causative: to make/let someone do","先生は学生に本を読ませました。(The teacher made the students read the book.)"],
+    ["使役受身形 (させられる)","verb + させられる","causative-passive: to be made to do (against one's will)","子供のころ、野菜を食べさせられました。(As a kid, I was made to eat vegetables.)"],
+    ["可能形","verb + potential form (e.g. 話す→話せる)","can do ~ (built into the verb itself)","彼は英語が話せます。(He can speak English.)"],
+    ["Vてあげます","て-form + あげます","do ~ for someone (you → others)","友達に本を貸してあげました。(I lent my friend a book.)"],
+    ["Vてもらいます","て-form + もらいます","have/receive someone doing ~ for you","友達に手伝ってもらいました。(I had my friend help me.)"],
+    ["Vてくれます","て-form + くれます","someone does ~ for you","友達が手伝ってくれました。(My friend helped me [for my benefit].)"],
+    ["Vておきます","て-form + おきます","do ~ in advance / leave it as is","会議の前に資料を準備しておきます。(I'll prepare the materials before the meeting.)"],
+    ["Vてしまいます","て-form + しまいます","finish doing ~ completely / end up doing ~ (often regrettable)","宿題を全部忘れてしまいました。(I completely forgot all my homework.)"],
+    ["Vてみます","て-form + みます","try doing ~","この料理を作ってみます。(I'll try making this dish.)"],
+    ["Vていきます","て-form + いきます","go on doing ~ / change, moving away/forward in time","これからも日本語を勉強していきます。(I'll keep studying Japanese from now on.)"],
+    ["Vてきます","て-form + きます","come to do ~ / change, moving toward now","日本語が少しずつ上手になってきました。(My Japanese has gradually gotten better.)"],
+    ["Vようと思います","volitional form + と思います","I think I'll do ~ / I've decided to ~","今度、ダイエットしようと思います。(I think I'll go on a diet.)"],
+    ["Vる予定です","dictionary form + 予定です","scheduled to / planning to do ~","来月、引っ越しする予定です。(I'm scheduled to move next month.)"],
+    ["～まま","past-tense modifier + まま","leaving something as it is, without change","電気をつけたまま寝てしまいました。(I fell asleep leaving the light on.)"],
+    ["Vるところです","dictionary form + ところです","just about to do ~","今から出かけるところです。(I'm just about to head out.)"],
+    ["Vたところです","た-form + ところです","just finished doing ~","ちょうど今、着いたところです。(I just arrived right now.)"],
+    ["Vているところです","ている-form + ところです","in the middle of doing ~","今、レポートを書いているところです。(I'm in the middle of writing the report right now.)"],
+    ["～かもしれません","plain form + かもしれません","might ~ / maybe ~","明日は雨が降るかもしれません。(It might rain tomorrow.)"],
+    ["～はずです","plain form + はずです","should be ~ / it's expected that ~","彼はもう着いているはずです。(He should have already arrived.)"],
+    ["Vるべきです","dictionary form + べきです","should do ~ (obligation)","約束は守るべきです。(You should keep your promises.)"],
+    ["Vるようになります","dictionary form + ようになります","come to do ~ / reach the point of being able to","漢字が読めるようになりました。(I've come to be able to read kanji.)"],
+    ["Vることになります","dictionary form + ことになります","it has been decided that ~ / it turns out that ~","来月、大阪に転勤することになりました。(It's been decided that I'll transfer to Osaka next month.)"],
+    ["Vることにします","dictionary form + ことにします","decide to do ~","毎朝、走ることにしました。(I've decided to run every morning.)"],
+    ["Nという","N + という","called ~ / that is said to be ~","富士山という山を知っていますか。(Do you know a mountain called Mt. Fuji?)"],
+    ["Vている間に","ている + 間に","while ~ is happening (something else happens within that time)","子供が寝ている間に、家事をします。(I do housework while the child is sleeping.)"],
+    ["Vている間","ている + 間","the whole time while ~ (continuous, same duration)","休みの間、ずっと家にいました。(I stayed home the whole break.)"],
+    ["～し","plain form + し","and moreover ~ (listing reasons)","この店は安いし、おいしいです。(This shop is cheap, and moreover, it's delicious.)"],
+    ["Vております","て-form + おります","humble/polite version of ~ています (keigo)","私は東京に住んでおります。(I live in Tokyo. [polite])"],
+    ["Nでございます","N + でございます","very polite version of ~です (keigo)","こちらは会議室でございます。(This is the meeting room. [very polite])"],
+    ["Vずに","ない-form, drop ない + ずに","without doing ~","朝ご飯を食べずに学校へ行きました。(I went to school without eating breakfast.)"],
+    ["～について","N + について","about ~ / regarding ~","日本の文化について話しましょう。(Let's talk about Japanese culture.)"]
+  ];
+
   // Cards that moved decks / shifted position in v11. Used once by
   // storage to carry existing progress over to the new ids.
   var LEGACY_ID_MAP = {"n4v100": "n4v96","n4v101": "n4v97","n4v102": "n4v98","n4v103": "n4v99","n4v104": "n4v100","n4v105": "n4v101","n4v106": "n4v102","n4v107": "n4v103","n4v108": "n4v104","n4v109": "n4v105","n4v110": "n4v106","n4v111": "n4v107","n4v112": "n4v108","n4v113": "n4v109","n4v114": "n4v110","n4v115": "n4v111","n4v116": "n4v112","n4v117": "n4v113","n4v118": "n4v114","n4v119": "n4v115","n4v120": "n4v116","n4v121": "n4v117","n4v122": "n4v118","n4v123": "n4v119","n4v124": "n4v120","n4v125": "n4v121","n4v126": "n4v122","n4v127": "n4v123","n4v128": "n4v124","n4v129": "n4v125","n4v130": "n4v126","n4v131": "n4v127","n4v132": "n4v128","n4v133": "n4v129","n4v134": "n4v130","n4v135": "n4v131","n4v136": "n4v132","n4v137": "n4v133","n4v138": "n4v134","n4v139": "n4v135","n4v23": "n4k171","n4v24": "n4v23","n4v25": "n4v24","n4v26": "n4v25","n4v27": "n4v26","n4v28": "n4k174","n4v29": "n4k175","n4v30": "n4k56","n4v31": "n4v27","n4v32": "n4v28","n4v33": "n4v29","n4v34": "n4v30","n4v35": "n4v31","n4v36": "n4v32","n4v37": "n4v33","n4v38": "n4v34","n4v39": "n4v35","n4v40": "n4v36","n4v41": "n4v37","n4v42": "n4v38","n4v43": "n4v39","n4v44": "n4v40","n4v45": "n4v41","n4v46": "n4v42","n4v47": "n4v43","n4v48": "n4v44","n4v49": "n4v45","n4v50": "n4v46","n4v51": "n4v47","n4v52": "n4v48","n4v53": "n4v49","n4v54": "n4v50","n4v55": "n4v51","n4v56": "n4v52","n4v57": "n4v53","n4v58": "n4v54","n4v59": "n4v55","n4v60": "n4v56","n4v61": "n4v57","n4v62": "n4v58","n4v63": "n4v59","n4v64": "n4v60","n4v65": "n4v61","n4v66": "n4v62","n4v67": "n4v63","n4v68": "n4v64","n4v69": "n4v65","n4v70": "n4v66","n4v71": "n4v67","n4v72": "n4v68","n4v73": "n4v69","n4v74": "n4v70","n4v75": "n4v71","n4v76": "n4v72","n4v77": "n4v73","n4v78": "n4v74","n4v79": "n4v75","n4v80": "n4v76","n4v81": "n4v77","n4v82": "n4v78","n4v83": "n4v79","n4v84": "n4v80","n4v85": "n4v81","n4v86": "n4v82","n4v87": "n4v83","n4v88": "n4v84","n4v89": "n4v85","n4v90": "n4v86","n4v91": "n4v87","n4v92": "n4v88","n4v93": "n4v89","n4v94": "n4v90","n4v95": "n4v91","n4v96": "n4v92","n4v97": "n4v93","n4v98": "n4v94","n4v99": "n4v95","v10": "v9","v100": "v79","v101": "v80","v102": "v81","v103": "v82","v11": "v10","v12": "v11","v13": "v12","v14": "v13","v15": "v14","v16": "n4k60","v17": "v15","v18": "v16","v19": "v17","v20": "v18","v21": "v19","v22": "v20","v23": "k17","v24": "v21","v25": "v22","v26": "v23","v27": "n4k110","v28": "n4k66","v29": "v24","v30": "v25","v31": "k104","v32": "k67","v33": "v26","v34": "k106","v35": "v27","v36": "v28","v37": "v29","v38": "k108","v39": "v30","v40": "v31","v41": "v32","v42": "v33","v43": "n4k124","v44": "v34","v45": "v35","v46": "v36","v47": "v37","v48": "v38","v49": "v39","v50": "v40","v51": "v41","v52": "v42","v53": "v43","v54": "v44","v55": "v45","v56": "k114","v57": "k46","v58": "k115","v59": "n4k63","v60": "v46","v61": "v47","v62": "n4k137","v63": "n4k84","v64": "n4k138","v65": "n4k146","v66": "n4k47","v67": "n4k51","v68": "n4k150","v69": "v48","v70": "v49","v71": "v50","v72": "v51","v73": "v52","v74": "v53","v75": "v54","v76": "v55","v77": "v56","v78": "v57","v79": "v58","v8": "k69","v80": "v59","v81": "v60","v82": "v61","v83": "v62","v84": "v63","v85": "v64","v86": "v65","v87": "v66","v88": "v67","v89": "v68","v9": "v8","v90": "v69","v91": "v70","v92": "v71","v93": "v72","v94": "v73","v95": "v74","v96": "v75","v97": "v76","v98": "v77","v99": "v78"};
@@ -299,10 +461,23 @@
   // into the N5 deck, which shifted the remaining N4 kanji ids.
   var LEGACY_ID_MAP_V12 = {"n4k10": "n4k9","n4k100": "n4k89","n4k101": "n4k90","n4k102": "n4k91","n4k103": "n4k92","n4k104": "n4k93","n4k105": "n4k94","n4k106": "k148","n4k107": "n4k95","n4k108": "n4k96","n4k109": "n4k97","n4k11": "n4k10","n4k110": "n4k98","n4k111": "k149","n4k112": "n4k99","n4k113": "k150","n4k114": "n4k100","n4k115": "n4k101","n4k116": "n4k102","n4k117": "n4k103","n4k118": "n4k104","n4k119": "n4k105","n4k12": "n4k11","n4k120": "n4k106","n4k121": "k151","n4k122": "n4k107","n4k123": "n4k108","n4k124": "n4k109","n4k125": "n4k110","n4k126": "n4k111","n4k127": "n4k112","n4k128": "k152","n4k129": "n4k113","n4k13": "n4k12","n4k130": "n4k114","n4k131": "n4k115","n4k132": "n4k116","n4k133": "n4k117","n4k134": "n4k118","n4k135": "n4k119","n4k136": "n4k120","n4k137": "n4k121","n4k138": "n4k122","n4k139": "n4k123","n4k14": "n4k13","n4k140": "n4k124","n4k141": "n4k125","n4k142": "k153","n4k143": "n4k126","n4k144": "n4k127","n4k145": "n4k128","n4k146": "n4k129","n4k147": "n4k130","n4k148": "n4k131","n4k149": "k154","n4k15": "n4k14","n4k150": "n4k132","n4k151": "n4k133","n4k152": "n4k134","n4k153": "n4k135","n4k154": "k155","n4k155": "n4k136","n4k156": "n4k137","n4k157": "n4k138","n4k158": "n4k139","n4k159": "n4k140","n4k16": "n4k15","n4k160": "n4k141","n4k161": "n4k142","n4k162": "n4k143","n4k163": "n4k144","n4k164": "n4k145","n4k165": "n4k146","n4k166": "n4k147","n4k167": "n4k148","n4k168": "n4k149","n4k169": "n4k150","n4k17": "n4k16","n4k170": "n4k151","n4k171": "n4k152","n4k172": "n4k153","n4k173": "n4k154","n4k174": "n4k155","n4k175": "n4k156","n4k176": "n4k157","n4k177": "n4k158","n4k178": "n4k159","n4k179": "n4k160","n4k18": "n4k17","n4k180": "n4k161","n4k181": "n4k162","n4k182": "n4k163","n4k183": "n4k164","n4k184": "n4k165","n4k185": "n4k166","n4k186": "n4k167","n4k187": "n4k168","n4k188": "n4k169","n4k189": "n4k170","n4k19": "n4k18","n4k190": "n4k171","n4k191": "n4k172","n4k192": "n4k173","n4k193": "n4k174","n4k194": "n4k175","n4k195": "n4k176","n4k196": "n4k177","n4k197": "n4k178","n4k198": "n4k179","n4k199": "n4k180","n4k20": "n4k19","n4k200": "n4k181","n4k201": "n4k182","n4k202": "n4k183","n4k203": "n4k184","n4k204": "n4k185","n4k205": "n4k186","n4k206": "n4k187","n4k207": "n4k188","n4k208": "n4k189","n4k209": "n4k190","n4k21": "n4k20","n4k210": "n4k191","n4k211": "n4k192","n4k212": "n4k193","n4k213": "n4k194","n4k214": "n4k195","n4k215": "n4k196","n4k216": "n4k197","n4k217": "n4k198","n4k218": "n4k199","n4k219": "n4k200","n4k22": "n4k21","n4k220": "n4k201","n4k221": "n4k202","n4k222": "n4k203","n4k223": "n4k204","n4k224": "n4k205","n4k225": "n4k206","n4k226": "n4k207","n4k227": "n4k208","n4k228": "n4k209","n4k229": "n4k210","n4k23": "n4k22","n4k230": "n4k211","n4k231": "n4k212","n4k232": "n4k213","n4k233": "n4k214","n4k234": "n4k215","n4k235": "n4k216","n4k236": "n4k217","n4k237": "n4k218","n4k238": "n4k219","n4k239": "n4k220","n4k24": "n4k23","n4k240": "n4k221","n4k241": "n4k222","n4k242": "n4k223","n4k243": "n4k224","n4k244": "n4k225","n4k245": "n4k226","n4k246": "n4k227","n4k247": "n4k228","n4k248": "n4k229","n4k249": "n4k230","n4k25": "n4k24","n4k250": "n4k231","n4k251": "n4k232","n4k252": "n4k233","n4k253": "n4k234","n4k254": "n4k235","n4k255": "n4k236","n4k256": "n4k237","n4k257": "n4k238","n4k258": "n4k239","n4k259": "n4k240","n4k26": "n4k25","n4k260": "n4k241","n4k261": "n4k242","n4k262": "n4k243","n4k263": "n4k244","n4k264": "n4k245","n4k265": "n4k246","n4k27": "n4k26","n4k28": "n4k27","n4k29": "n4k28","n4k30": "n4k29","n4k31": "n4k30","n4k32": "n4k31","n4k33": "n4k32","n4k34": "n4k33","n4k35": "n4k34","n4k36": "n4k35","n4k37": "n4k36","n4k38": "n4k37","n4k39": "n4k38","n4k4": "k137","n4k40": "n4k39","n4k41": "n4k40","n4k42": "n4k41","n4k43": "k138","n4k44": "k139","n4k45": "k140","n4k46": "n4k42","n4k47": "n4k43","n4k48": "n4k44","n4k49": "n4k45","n4k5": "n4k4","n4k50": "n4k46","n4k51": "n4k47","n4k52": "n4k48","n4k53": "n4k49","n4k54": "n4k50","n4k55": "n4k51","n4k56": "n4k52","n4k57": "n4k53","n4k58": "n4k54","n4k59": "n4k55","n4k6": "n4k5","n4k60": "n4k56","n4k61": "n4k57","n4k62": "n4k58","n4k63": "n4k59","n4k64": "n4k60","n4k65": "n4k61","n4k66": "n4k62","n4k67": "n4k63","n4k68": "n4k64","n4k69": "k141","n4k7": "n4k6","n4k70": "n4k65","n4k71": "n4k66","n4k72": "n4k67","n4k73": "n4k68","n4k74": "n4k69","n4k75": "n4k70","n4k76": "k142","n4k77": "k143","n4k78": "k144","n4k79": "k145","n4k8": "n4k7","n4k80": "n4k71","n4k81": "n4k72","n4k82": "n4k73","n4k83": "n4k74","n4k84": "n4k75","n4k85": "n4k76","n4k86": "n4k77","n4k87": "n4k78","n4k88": "k146","n4k89": "n4k79","n4k9": "n4k8","n4k90": "k147","n4k91": "n4k80","n4k92": "n4k81","n4k93": "n4k82","n4k94": "n4k83","n4k95": "n4k84","n4k96": "n4k85","n4k97": "n4k86","n4k98": "n4k87","n4k99": "n4k88"};
 
+  // v19: four grammar cards moved from N4 to N5 (ids carry the level prefix,
+  // so they changed). Carries existing progress across, once.
+  var LEGACY_ID_MAP_V19 = {
+    "n4g_～ので": "g_～ので",
+    "n4g_Vすぎます": "g_Vすぎます",
+    "n4g_Vつもりです": "g_Vつもりです",
+    "n4g_～がります": "g_～がります"
+  };
+
   var N5_KANJI = withIds(N5_KANJI_RAW, "k", "kanji", "n5");
   var N5_VOCAB = withIds(N5_VOCAB_RAW, "v", "vocab", "n5");
   var N4_KANJI = withIds(N4_KANJI_RAW, "n4k", "kanji", "n4");
   var N4_VOCAB = withIds(N4_VOCAB_RAW, "n4v", "vocab", "n4");
+  // Grammar cards are brand new, so unlike kanji/vocab their ids never had
+  // an older positional form -- no legacy map entry needed for them.
+  var N5_GRAMMAR = withIds(N5_GRAMMAR_RAW, "g", "grammar", "n5");
+  var N4_GRAMMAR = withIds(N4_GRAMMAR_RAW, "n4g", "grammar", "n4");
 
   // v13: ids switched from positional ("k0", "n4v62", ...) to content-based
   // ("k_一", "n4v_..."), which stay correct no matter how these lists get
@@ -350,16 +525,17 @@
   N5_VOCAB.concat(N4_VOCAB).forEach(function (c) { c.example = autoExample(c); });
 
   var BY_ID = {};
-  N5_KANJI.concat(N5_VOCAB).concat(N4_KANJI).concat(N4_VOCAB).forEach(function (c) { BY_ID[c.id] = c; });
+  N5_KANJI.concat(N5_VOCAB).concat(N5_GRAMMAR).concat(N4_KANJI).concat(N4_VOCAB).concat(N4_GRAMMAR).forEach(function (c) { BY_ID[c.id] = c; });
 
   window.FlashcardData = {
     levels: {
-      n5: { kanji: N5_KANJI, vocab: N5_VOCAB, all: N5_KANJI.concat(N5_VOCAB) },
-      n4: { kanji: N4_KANJI, vocab: N4_VOCAB, all: N4_KANJI.concat(N4_VOCAB) }
+      n5: { kanji: N5_KANJI, vocab: N5_VOCAB, grammar: N5_GRAMMAR, all: N5_KANJI.concat(N5_VOCAB).concat(N5_GRAMMAR) },
+      n4: { kanji: N4_KANJI, vocab: N4_VOCAB, grammar: N4_GRAMMAR, all: N4_KANJI.concat(N4_VOCAB).concat(N4_GRAMMAR) }
     },
     BY_ID: BY_ID,
     LEGACY_ID_MAP: LEGACY_ID_MAP,
     LEGACY_ID_MAP_V12: LEGACY_ID_MAP_V12,
-    LEGACY_ID_MAP_V13: LEGACY_ID_MAP_V13
+    LEGACY_ID_MAP_V13: LEGACY_ID_MAP_V13,
+    LEGACY_ID_MAP_V19: LEGACY_ID_MAP_V19
   };
 })();

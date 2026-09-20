@@ -7,7 +7,7 @@
     theme: "light",        // light | dark
     studyMode: "flip",      // flip | type
     level: "n5",              // n5 | n4
-    filter: "all",              // all | kanji | vocab
+    filter: "all",              // all | kanji | vocab | grammar
     view: "study",                // study | browse | add | stats
     queue: [],
     current: null,
@@ -58,7 +58,8 @@
   var ID_MIGRATIONS = [
     { flag: "idsMigratedV11", map: "LEGACY_ID_MAP" },
     { flag: "idsMigratedV12", map: "LEGACY_ID_MAP_V12" },
-    { flag: "idsMigratedV13", map: "LEGACY_ID_MAP_V13" }
+    { flag: "idsMigratedV13", map: "LEGACY_ID_MAP_V13" },
+    { flag: "idsMigratedV19", map: "LEGACY_ID_MAP_V19" }
   ];
 
   function migrateIds(data) {
@@ -170,7 +171,10 @@
   }
 
   function flip() {
-    if (!state.current || state.studyMode !== "flip") return;
+    // Grammar cards always behave as flip cards, even in Type mode -- typing
+    // a kana reading doesn't make sense for a grammar pattern.
+    var allowFlip = state.studyMode === "flip" || (state.current && state.current.deck === "grammar");
+    if (!state.current || !allowFlip) return;
     state.flipped = !state.flipped;
 
     // Toggle the class on the card that's already in the DOM instead of
@@ -189,10 +193,16 @@
     render();
   }
 
+  // True when the current card should use Type-answer UI. Grammar cards
+  // are excluded even in Type mode -- see flip() above.
+  function isTypingCard(card) {
+    return state.studyMode === "type" && card && card.deck !== "grammar";
+  }
+
   // Enable/disable the grade buttons in place, mirroring what render()
   // would compute, without touching the card element.
   function updateGradeRowEnabled() {
-    var showGrades = state.studyMode === "type" ? state.typedChecked : state.flipped;
+    var showGrades = isTypingCard(state.current) ? state.typedChecked : state.flipped;
     var buttons = document.querySelectorAll(".grade-row .grade-btn");
     for (var i = 0; i < buttons.length; i++) {
       if (showGrades) buttons[i].removeAttribute("disabled");
@@ -204,7 +214,7 @@
   // so without this the panel built by renderStudy() never reaches the DOM
   // when you flip a card.
   function updateKanjiDetail() {
-    var showDetail = state.studyMode === "type" ? state.typedChecked : state.flipped;
+    var showDetail = isTypingCard(state.current) ? state.typedChecked : state.flipped;
     var existing = document.querySelector(".kanji-detail-panel");
     if (!showDetail) {
       if (existing && existing.parentNode) existing.parentNode.removeChild(existing);
@@ -387,7 +397,8 @@
     return el("div", { class: "tabs" }, [
       el("div", { class: "tab" + (state.filter === "all" ? " active" : ""), onClick: function () { setFilter("all"); }, text: "All (" + (lvl.all.length + customCount("all")) + ")" }),
       el("div", { class: "tab" + (state.filter === "kanji" ? " active" : ""), onClick: function () { setFilter("kanji"); }, text: "Kanji (" + (lvl.kanji.length + customCount("kanji")) + ")" }),
-      el("div", { class: "tab" + (state.filter === "vocab" ? " active" : ""), onClick: function () { setFilter("vocab"); }, text: "Vocabulary (" + (lvl.vocab.length + customCount("vocab")) + ")" })
+      el("div", { class: "tab" + (state.filter === "vocab" ? " active" : ""), onClick: function () { setFilter("vocab"); }, text: "Vocabulary (" + (lvl.vocab.length + customCount("vocab")) + ")" }),
+      el("div", { class: "tab" + (state.filter === "grammar" ? " active" : ""), onClick: function () { setFilter("grammar"); }, text: "Grammar (" + (lvl.grammar.length + customCount("grammar")) + ")" })
     ]);
   }
 
@@ -420,9 +431,13 @@
 
   function audioButton(card) {
     if (!window.Speech.supported()) return null;
+    // Grammar cards' `reading` field holds a formation note (often mixed
+    // English/Japanese), not a kana reading -- speak the pattern itself
+    // instead. Everything else speaks its reading, as before.
+    var toSpeak = card.deck === "grammar" ? card.front : card.reading;
     return el("button", {
       class: "audio-btn",
-      onClick: function (e) { e.stopPropagation(); window.Speech.speak(card.reading.split("\u30fb")[0]); },
+      onClick: function (e) { e.stopPropagation(); window.Speech.speak(toSpeak.split("\u30fb")[0]); },
       text: "\ud83d\udd0a listen"
     });
   }
@@ -661,9 +676,9 @@
     var ratingBanner = renderRatingStudyBanner();
     if (ratingBanner) pieces.push(ratingBanner);
 
-    pieces.push(state.studyMode === "type" ? renderTypeCard(card, isKanji) : renderFlipCard(card, isKanji));
+    pieces.push(isTypingCard(card) ? renderTypeCard(card, isKanji) : renderFlipCard(card, isKanji));
 
-    var showGrades = state.studyMode === "type" ? state.typedChecked : state.flipped;
+    var showGrades = isTypingCard(card) ? state.typedChecked : state.flipped;
     if (showGrades) {
       var detail = renderKanjiDetail(card);
       if (detail) pieces.push(detail);
@@ -677,21 +692,28 @@
     return el("div", {}, pieces);
   }
 
+  // "kanji" / "vocabulary" / "grammar" label shown in the corner of a card.
+  function deckLabel(card) {
+    if (card.deck === "kanji") return "kanji";
+    if (card.deck === "grammar") return "grammar";
+    return "vocabulary";
+  }
+
   function renderFlipCard(card, isKanji) {
     // .face only handles 3D positioning/backface-visibility; everything
     // that's actually painted (border/background/shadow) lives on the
     // nested .face-surface — see the CSS comment for why this split
     // matters on iOS Safari.
     var frontSurface = el("div", { class: "face-surface" }, [
-      el("div", { class: "corner-mark", text: isKanji ? "kanji" : "vocabulary" }),
+      el("div", { class: "corner-mark", text: deckLabel(card) }),
       el("div", { class: "prompt" + (isKanji ? "" : " vocab"), text: card.front }),
       el("div", { class: "hint", text: "tap to reveal" })
     ]);
     var faceFront = el("div", { class: "face front" }, [frontSurface]);
 
     var backChildren = [
-      el("div", { class: "corner-mark", text: isKanji ? "kanji" : "vocabulary" }),
-      el("div", { class: "reading", text: card.reading }),
+      el("div", { class: "corner-mark", text: deckLabel(card) }),
+      el("div", { class: "reading" + (card.deck === "grammar" ? " formation" : ""), text: card.reading }),
       el("div", { class: "meaning", text: card.meaning })
     ];
     if (card.example) backChildren.push(el("div", { class: "example", text: card.example }));
@@ -705,7 +727,7 @@
 
   function renderTypeCard(card, isKanji) {
     var promptBox = el("div", { class: "type-prompt-box" }, [
-      el("div", { class: "corner-mark", text: isKanji ? "kanji" : "vocabulary" }),
+      el("div", { class: "corner-mark", text: deckLabel(card) }),
       el("div", { class: "prompt" + (isKanji ? "" : " vocab"), text: card.front })
     ]);
 
@@ -874,7 +896,8 @@
     ]);
     var deckSel = el("select", { onChange: function (e) { state.addForm.deck = e.target.value; } }, [
       el("option", { value: "vocab", text: "Vocabulary", selected: f.deck === "vocab" ? "selected" : null }),
-      el("option", { value: "kanji", text: "Kanji", selected: f.deck === "kanji" ? "selected" : null })
+      el("option", { value: "kanji", text: "Kanji", selected: f.deck === "kanji" ? "selected" : null }),
+      el("option", { value: "grammar", text: "Grammar", selected: f.deck === "grammar" ? "selected" : null })
     ]);
 
     function field(labelText, key) {
@@ -888,8 +911,8 @@
       el("label", { class: "form-field" }, [el("span", { text: "Level" }), levelSel]),
       el("label", { class: "form-field" }, [el("span", { text: "Deck" }), deckSel])
     ]));
-    wrap.appendChild(field("Front (word / kanji)", "front"));
-    wrap.appendChild(field("Reading (kana)", "reading"));
+    wrap.appendChild(field(f.deck === "grammar" ? "Front (grammar pattern, e.g. \u3008Vて\u3009+ください)" : "Front (word / kanji)", "front"));
+    wrap.appendChild(field(f.deck === "grammar" ? "Formation (e.g. Vて-form + ください)" : "Reading (kana)", "reading"));
     // On'yomi/kun'yomi only make sense for a kanji card, and are optional
     // even then -- leave either blank and it's simply left off the card.
     if (f.deck === "kanji") {
@@ -1059,4 +1082,4 @@
   });
 
   loadState();
-})(); 
+})();
